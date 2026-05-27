@@ -1,0 +1,10 @@
+streamlit
+anthropic
+pdfplumber
+python-pptx
+apscheduler
+python-dotenv
+requests
+matplotlib
+beautifulsoup4
+lxml
