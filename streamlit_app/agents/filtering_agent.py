@@ -4,16 +4,17 @@ import re
 import anthropic
 from dotenv import load_dotenv
 from functions.db_manager import get_connection
-from functions.dart_collector import find_corps_by_names, collect_by_corps
+from functions.dart_collector import (
+    find_corps_by_names, find_corps_by_industry,
+    collect_by_corps, INDUSTRY_KEYWORD_MAP,
+)
 
 load_dotenv()
 client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
 
 
 def _parse_query(query: str) -> dict:
-    """Mode A(산업만) vs Mode B(산업+기업 직접 지정) 판별.
-    Mode B 형식: "ESS [삼성SDI, LG에너지솔루션]" 또는 "ESS (삼성SDI, LG에너지솔루션)"
-    """
+    """Mode A(산업만) vs Mode B(산업+기업 직접 지정) 판별."""
     m = re.search(r'[\[\(]([^\]\)]+)[\]\)]', query)
     if m:
         corp_names = [n.strip() for n in m.group(1).split(',') if n.strip()]
@@ -38,71 +39,36 @@ def _extract_json(text: str, open_bracket: str) -> str:
     return ""
 
 
-def _parse_name_list(text: str) -> list[str]:
-    raw = _extract_json(text, "[")
-    items = json.loads(raw) if raw else []
-    result = []
-    for item in items:
-        if isinstance(item, str):
-            result.append(item)
-        elif isinstance(item, dict):
-            name = item.get("company") or item.get("name") or item.get("corp_name") or ""
-            if name:
-                result.append(name)
-    return result
+def _resolve_keyword(industry: str) -> list[str]:
+    """산업 키워드를 INDUSTRY_KEYWORD_MAP 키로 매핑. 직접 매칭 없으면 Claude로 추론."""
+    # 직접 매칭
+    for key in INDUSTRY_KEYWORD_MAP:
+        if key in industry or industry in key:
+            return [key]
 
-
-def _find_companies_by_web(industry: str) -> list[str]:
-    """Claude Sonnet + web_search로 국내 상장기업 발견 (뉴스 우선 + 지식 보완)"""
-    # 1순위: 최근 뉴스 기반
+    # Claude로 가장 가까운 키 추론
+    keys = list(INDUSTRY_KEYWORD_MAP.keys())
     resp = client.messages.create(
         model="claude-sonnet-4-6",
-        max_tokens=1024,
-        tools=[{"type": "web_search_20250305", "name": "web_search"}],
+        max_tokens=64,
         messages=[{
             "role": "user",
-            "content": f"""웹 검색으로 "{industry}" 산업 관련 최근 뉴스를 찾아주세요.
-뉴스에 등장하는 한국 KOSPI·KOSDAQ 상장 기업명만 추출해 JSON 문자열 배열로 반환하세요.
-최근에 자주 언급된 기업을 앞에 두세요.
-예: ["기업A", "기업B"]
+            "content": f"""다음 산업 키워드 목록에서 "{industry}"와 가장 관련 있는 항목들을 골라 JSON 배열로 반환하세요.
+없으면 빈 배열.
+목록: {keys}
 JSON 배열만, 설명 없이."""
         }]
     )
-    news_names: list[str] = []
-    for block in resp.content:
-        if hasattr(block, "text") and block.text.strip():
-            try:
-                news_names = _parse_name_list(block.text)
-            except Exception:
-                pass
-
-    # 2순위: Claude 지식 기반 보완
-    resp2 = client.messages.create(
-        model="claude-sonnet-4-6",
-        max_tokens=512,
-        messages=[{
-            "role": "user",
-            "content": f""""{industry}" 산업에 직접 종사하는 한국 KOSPI·KOSDAQ 상장 기업을 최대한 많이 찾아주세요.
-대기업부터 중소형까지 포함. 최대 20개. JSON 문자열 배열만.
-예: ["기업A", "기업B"]"""
-        }]
-    )
     try:
-        knowledge_names = _parse_name_list(resp2.content[0].text)
+        raw = _extract_json(resp.content[0].text, "[")
+        matched = json.loads(raw) if raw else []
+        return [k for k in matched if k in INDUSTRY_KEYWORD_MAP]
     except Exception:
-        knowledge_names = []
-
-    seen = set(news_names)
-    combined = list(news_names)
-    for name in knowledge_names:
-        if name not in seen:
-            seen.add(name)
-            combined.append(name)
-    return combined
+        return []
 
 
 def _query_db_by_names(corp_names: list[str]) -> list[dict]:
-    """기업명 리스트로 filings 테이블에서 기업별 최신 신고서 1건씩 조회"""
+    """기업명 리스트로 DB에서 기업별 최신 신고서 1건씩 조회"""
     if not corp_names:
         return []
     placeholders = ",".join("?" * len(corp_names))
@@ -122,38 +88,34 @@ def _query_db_by_names(corp_names: list[str]) -> list[dict]:
              "filing_id": r["filing_id"], "revenue_share": None} for r in rows]
 
 
+def _query_db_by_corp_codes(corp_codes: list[str]) -> list[dict]:
+    """corp_code 리스트로 DB에서 기업별 최신 신고서 1건씩 조회"""
+    if not corp_codes:
+        return []
+    placeholders = ",".join("?" * len(corp_codes))
+    sql = f"""
+        SELECT f.corp_name, f.corp_code, f.id AS filing_id
+        FROM filings f
+        INNER JOIN (
+            SELECT corp_code, MAX(filed_at) AS max_filed
+            FROM filings
+            WHERE corp_code IN ({placeholders})
+            GROUP BY corp_code
+        ) latest ON f.corp_code = latest.corp_code AND f.filed_at = latest.max_filed
+    """
+    with get_connection() as conn:
+        rows = conn.execute(sql, corp_codes).fetchall()
+    return [{"corp_name": r["corp_name"], "corp_code": r["corp_code"],
+             "filing_id": r["filing_id"], "revenue_share": None} for r in rows]
+
+
 def group_by_subsector(companies: list[dict], query: str) -> dict[str, list[str]]:
-    """기업별 세그먼트 데이터 → Claude Sonnet으로 동적 세부 분야 그룹핑"""
+    """기업 목록 → Claude로 밸류체인 기준 그룹핑"""
     if not companies:
         return {}
 
-    filing_ids = list({c["filing_id"] for c in companies})
-    placeholders = ",".join("?" * len(filing_ids))
-
-    with get_connection() as conn:
-        rows = conn.execute(f"""
-            SELECT f.corp_name, s.product, s.application, s.revenue_share
-            FROM segments s JOIN filings f ON f.id = s.filing_id
-            WHERE s.filing_id IN ({placeholders})
-            ORDER BY s.revenue_share DESC NULLS LAST
-        """, filing_ids).fetchall()
-
-    corp_segs: dict[str, list[str]] = {}
-    for r in rows:
-        name = r["corp_name"]
-        seg = f"{r['product'] or ''} / {r['application'] or ''}".strip(" /")
-        corp_segs.setdefault(name, [])
-        if len(corp_segs[name]) < 2 and seg:
-            corp_segs[name].append(seg)
-
-    corp_summary = "\n".join(
-        f"- {name}: {', '.join(segs)}" for name, segs in corp_segs.items() if segs
-    )
-    # 세그먼트 없는 기업도 포함
-    all_names = [c["corp_name"] for c in companies]
-    no_seg = [n for n in all_names if n not in corp_segs]
-    if no_seg:
-        corp_summary += "\n" + "\n".join(f"- {n}: (세그먼트 정보 없음)" for n in no_seg)
+    corp_names = [c["corp_name"] for c in companies]
+    name_list = "\n".join(f"- {n}" for n in corp_names)
 
     resp = client.messages.create(
         model="claude-sonnet-4-6",
@@ -167,7 +129,7 @@ def group_by_subsector(companies: list[dict], query: str) -> dict[str, list[str]
 JSON만 반환. 형식: {{"그룹명": ["기업A", "기업B"]}}
 
 기업 목록:
-{corp_summary}"""
+{name_list}"""
         }]
     )
 
@@ -181,22 +143,17 @@ JSON만 반환. 형식: {{"그룹명": ["기업A", "기업B"]}}
             if valid:
                 validated[label] = valid
         classified = {n for ns in validated.values() for n in ns}
-        leftover = list(dict.fromkeys(c["corp_name"] for c in companies if c["corp_name"] not in classified))
+        leftover = [c["corp_name"] for c in companies if c["corp_name"] not in classified]
         if leftover:
             validated["기타"] = leftover
         return validated
     except Exception:
-        names = list(dict.fromkeys(c["corp_name"] for c in companies))
-        return {"전체": names}
+        return {"전체": corp_names}
 
 
 def run(query: str) -> tuple[str, list[dict], dict | None, str | None]:
     """
     반환: (mode, companies, subsectors, warning)
-    - mode: "A"(산업만) | "B"(산업+기업직접)
-    - companies: [{corp_name, corp_code, filing_id, revenue_share}]
-    - subsectors: {분야명: [기업명, ...]} (Mode A만, Mode B는 None)
-    - warning: 증권신고서 없을 때 경고 메시지
     """
     parsed = _parse_query(query)
     mode = parsed["mode"]
@@ -209,14 +166,22 @@ def run(query: str) -> tuple[str, list[dict], dict | None, str | None]:
             collect_by_corps(corps)
         companies = _query_db_by_names(corp_names)
         subsectors = None
+
     else:
-        # Mode A: 웹서치로 기업 발견
-        names = _find_companies_by_web(industry)
-        if names:
-            corps = find_corps_by_names(names)
-            if corps:
-                collect_by_corps(corps)
-        companies = _query_db_by_names(names) if names else []
+        # Mode A: 업종코드로 기업 조회
+        keywords = _resolve_keyword(industry)
+        corps = []
+        for kw in keywords:
+            corps.extend(find_corps_by_industry(kw))
+        # 중복 제거
+        seen = set()
+        corps = [c for c in corps if not (c["corp_code"] in seen or seen.add(c["corp_code"]))]
+
+        if corps:
+            collect_by_corps(corps)
+
+        corp_codes = [c["corp_code"] for c in corps]
+        companies = _query_db_by_corp_codes(corp_codes)
         subsectors = group_by_subsector(companies, industry) if companies else {}
 
     warning = None

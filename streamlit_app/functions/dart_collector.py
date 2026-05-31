@@ -5,6 +5,7 @@ import time
 import zipfile
 import requests
 import anthropic
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import date, timedelta
 from xml.etree import ElementTree as ET
 from dotenv import load_dotenv
@@ -22,6 +23,39 @@ REPORT_TYPES = {
 }
 
 _CORP_CACHE = os.path.join(os.path.dirname(__file__), "../db/corp_cache.json")
+_INDUSTRY_CACHE = os.path.join(os.path.dirname(__file__), "../db/industry_cache.json")
+
+# 키워드 → KSIC 업종코드 앞자리 매핑 (5자리 코드의 prefix)
+INDUSTRY_KEYWORD_MAP: dict[str, list[str]] = {
+    "자동차":       ["301", "302", "303"],
+    "완성차":       ["301"],
+    "자동차부품":   ["302", "303"],
+    "배터리":       ["279", "281"],
+    "이차전지":     ["279", "281"],
+    "ESS":          ["279", "281", "351"],
+    "반도체":       ["261"],
+    "전자부품":     ["262", "263", "264"],
+    "디스플레이":   ["262"],
+    "로봇":         ["291", "292"],
+    "방산":         ["303", "304"],
+    "항공":         ["303", "313"],
+    "조선":         ["311"],
+    "철강":         ["241", "242", "243"],
+    "화학":         ["201", "202", "203", "204", "205", "206"],
+    "바이오":       ["211", "212"],
+    "제약":         ["211"],
+    "에너지":       ["351", "352", "061", "062"],
+    "태양광":       ["281", "351"],
+    "수소":         ["192", "206", "281"],
+    "건설":         ["411", "412"],
+    "통신":         ["612"],
+    "소프트웨어":   ["582", "620"],
+    "게임":         ["582"],
+    "엔터":         ["591", "592"],
+    "유통":         ["461", "462", "471", "472", "478"],
+    "음식료":       ["101", "102", "103", "104", "105", "106", "107", "108"],
+    "섬유":         ["131", "132", "133"],
+}
 
 
 def _load_corp_list() -> list[dict]:
@@ -49,6 +83,88 @@ def _load_corp_list() -> list[dict]:
     with open(_CORP_CACHE, "w", encoding="utf-8") as f:
         json.dump(corps, f, ensure_ascii=False)
     return corps
+
+
+def _fetch_induty_code(corp_code: str) -> str | None:
+    try:
+        r = requests.get(f"{BASE_URL}/company.json",
+                         params={"crtfc_key": DART_API_KEY, "corp_code": corp_code},
+                         timeout=10)
+        data = r.json()
+        if data.get("status") == "000":
+            return data.get("induty_code", "")
+    except Exception:
+        pass
+    return None
+
+
+def build_industry_cache(force: bool = False) -> dict:
+    """상장사 전체 업종코드 캐시 빌드 (7일 캐시, 병렬 요청).
+    반환: {corp_code: {corp_name, stock_code, induty_code}}
+    """
+    if not force and os.path.exists(_INDUSTRY_CACHE):
+        if time.time() - os.path.getmtime(_INDUSTRY_CACHE) < 7 * 86400:
+            with open(_INDUSTRY_CACHE, encoding="utf-8") as f:
+                return json.load(f)
+
+    corps = _load_corp_list()  # 상장사만 (stock_code 있는 것)
+    print(f"업종코드 캐시 빌드 시작: {len(corps)}개 상장사")
+
+    cache: dict[str, dict] = {}
+    done = 0
+
+    def fetch(corp):
+        code = _fetch_induty_code(corp["corp_code"])
+        return corp, code
+
+    with ThreadPoolExecutor(max_workers=20) as ex:
+        futures = {ex.submit(fetch, c): c for c in corps}
+        for fut in as_completed(futures):
+            corp, induty_code = fut.result()
+            cache[corp["corp_code"]] = {
+                "corp_name": corp["corp_name"],
+                "stock_code": corp["stock_code"],
+                "induty_code": induty_code or "",
+            }
+            done += 1
+            if done % 200 == 0:
+                print(f"  {done}/{len(corps)} 완료")
+
+    os.makedirs(os.path.dirname(_INDUSTRY_CACHE), exist_ok=True)
+    with open(_INDUSTRY_CACHE, "w", encoding="utf-8") as f:
+        json.dump(cache, f, ensure_ascii=False)
+    print("업종코드 캐시 저장 완료")
+    return cache
+
+
+def _load_industry_cache() -> dict:
+    if os.path.exists(_INDUSTRY_CACHE):
+        if time.time() - os.path.getmtime(_INDUSTRY_CACHE) < 7 * 86400:
+            with open(_INDUSTRY_CACHE, encoding="utf-8") as f:
+                return json.load(f)
+    return build_industry_cache()
+
+
+def find_corps_by_industry(keyword: str) -> list[dict]:
+    """키워드 → 업종코드 매핑 → 해당 업종 상장사 리스트 반환.
+    반환: [{corp_code, corp_name, stock_code}]
+    """
+    prefixes = INDUSTRY_KEYWORD_MAP.get(keyword, [])
+    if not prefixes:
+        # 매핑 없으면 키워드로 직접 prefix 검색 (부분 일치)
+        prefixes = [keyword]
+
+    cache = _load_industry_cache()
+    result = []
+    for corp_code, info in cache.items():
+        code = info.get("induty_code", "")
+        if any(code.startswith(p) for p in prefixes):
+            result.append({
+                "corp_code": corp_code,
+                "corp_name": info["corp_name"],
+                "stock_code": info["stock_code"],
+            })
+    return result
 
 
 def find_corps_by_names(names: list[str]) -> list[dict]:
