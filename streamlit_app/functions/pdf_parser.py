@@ -194,7 +194,12 @@ _APPLICATION_HEADERS = {"사업부문", "부문", "세그먼트", "사업부", "
                         "적용분야", "사업 부문", "구분"}
 _REVENUE_HEADERS     = {"매출비중", "비중", "매출 비중", "구성비", "비율",
                         "매출비율", "비 중", "비중(%)"}
-_SKIP_ROWS           = {"합계", "계", "total", "소계", "-", ""}
+_SKIP_ROWS           = {"합계", "합 계", "소계", "소 계", "계", "총계", "total",
+                        "subtotal", "연결조정", "비율", "매출액", "구성비", "-", ""}
+
+_YEAR_PATTERN    = re.compile(r"^\d{4}(년|연도)")
+_PERIOD_PATTERN  = re.compile(r"제\d+기")
+_PCT_ONLY        = re.compile(r"^[\-\(]?\d+(?:\.\d+)?[%\)]+$")
 
 
 def _norm(text: str) -> str:
@@ -265,6 +270,10 @@ def extract_segments_from_tables(doc_bytes: bytes) -> list[dict]:
         if prod_idx == -1 or rev_idx == -1:
             continue
 
+        _skip_set = {s.replace(" ", "") for s in _SKIP_ROWS}
+        _header_words = {h.lower() for h in
+                         _PRODUCT_HEADERS | _APPLICATION_HEADERS | _REVENUE_HEADERS}
+
         for row in rows[1:]:
             def get(idx):
                 return row[idx].strip() if 0 <= idx < len(row) else ""
@@ -272,11 +281,20 @@ def extract_segments_from_tables(doc_bytes: bytes) -> list[dict]:
             product = get(prod_idx)
             application = get(app_idx)
 
-            if _norm(product).lower() in _SKIP_ROWS:
+            p_norm = _norm(product).lower()
+            a_norm = _norm(application).lower()
+
+            if p_norm.replace(" ", "") in _skip_set:
                 continue
-            if _norm(application).lower() in _SKIP_ROWS:
+            if a_norm.replace(" ", "") in _skip_set:
                 continue
             if re.fullmatch(r"[\d,\s]+", product):  # 합계 금액행
+                continue
+            if _PCT_ONLY.match(product):  # 비중값이 product로 잘못 들어온 행
+                continue
+            if _YEAR_PATTERN.match(product) or _PERIOD_PATTERN.search(product):  # 연도/기수 행
+                continue
+            if p_norm in _header_words:  # 컬럼 헤더 행이 데이터로 들어온 경우
                 continue
 
             results.append({

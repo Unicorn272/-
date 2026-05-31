@@ -146,7 +146,7 @@ elif st.session_state.step in ("analyze", "done"):
 
         with st.status("분석 중...", expanded=True) as status:
             st.write("② 투자위험요소 텍스트 수집 중...")
-            extracted = extraction_agent.run(companies)
+            extracted = extraction_agent.run(companies, mode=st.session_state.mode)
             corp_list = [c["corp_name"] for c in extracted.get("corp_filings", [])]
             st.write(f"✅ {len(corp_list)}개 신고서 수집 완료: {corp_list}")
 
@@ -168,7 +168,7 @@ elif st.session_state.step in ("analyze", "done"):
     tab1, tab2 = st.tabs(["덱 구성", "리서치 데이터"])
 
     with tab1:
-        for sec in analysis.get("deck_structure", []):
+        for sec in analysis.get("sections", []):
             st.markdown(f"#### Section {sec['section_no']}: {sec['section_title']}")
             for ch in sec.get("chapters", []):
                 with st.container(border=True):
@@ -178,23 +178,7 @@ elif st.session_state.step in ("analyze", "done"):
             st.write("")
 
     with tab2:
-        for block in analysis.get("research_data", []):
-            st.markdown(f"#### {block['topic']}")
-            for item in block.get("items", []):
-                col1, col2, col3 = st.columns([4, 3, 3])
-                with col1:
-                    st.markdown(item.get("text", ""))
-                with col2:
-                    if item.get("data"):
-                        st.caption(item.get("data", ""))
-                with col3:
-                    st.caption(f"📄 {item.get('source', '')}")
-            st.divider()
-
-        if analysis.get("data_limitations"):
-            st.markdown("**⚠ 데이터 한계**")
-            for limit in analysis["data_limitations"]:
-                st.caption(f"• {limit}")
+        st.info("리서치 데이터는 아래 엑셀 파일에서 확인하세요.")
 
     st.divider()
     col1, col2 = st.columns([2, 5])
