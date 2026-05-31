@@ -1,5 +1,6 @@
 import json
 import os
+import re
 import anthropic
 from dotenv import load_dotenv
 from functions.db_manager import get_connection
@@ -9,8 +10,19 @@ load_dotenv()
 client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
 
 
+def _parse_query(query: str) -> dict:
+    """Mode A(산업만) vs Mode B(산업+기업 직접 지정) 판별.
+    Mode B 형식: "ESS [삼성SDI, LG에너지솔루션]" 또는 "ESS (삼성SDI, LG에너지솔루션)"
+    """
+    m = re.search(r'[\[\(]([^\]\)]+)[\]\)]', query)
+    if m:
+        corp_names = [n.strip() for n in m.group(1).split(',') if n.strip()]
+        industry = query[:m.start()].strip()
+        return {"mode": "B", "industry": industry, "corp_names": corp_names}
+    return {"mode": "A", "industry": query}
+
+
 def _extract_json(text: str, open_bracket: str) -> str:
-    """텍스트에서 첫 번째 JSON 객체/배열을 브래킷 매칭으로 추출"""
     close_bracket = "]" if open_bracket == "[" else "}"
     start = text.find(open_bracket)
     if start == -1:
@@ -26,111 +38,190 @@ def _extract_json(text: str, open_bracket: str) -> str:
     return ""
 
 
-def _extract_keywords(query: str) -> dict:
-    """사용자 입력에서 제품·적용분야 키워드 추출"""
+def _parse_name_list(text: str) -> list[str]:
+    raw = _extract_json(text, "[")
+    items = json.loads(raw) if raw else []
+    result = []
+    for item in items:
+        if isinstance(item, str):
+            result.append(item)
+        elif isinstance(item, dict):
+            name = item.get("company") or item.get("name") or item.get("corp_name") or ""
+            if name:
+                result.append(name)
+    return result
+
+
+def _find_companies_by_web(industry: str) -> list[str]:
+    """Claude Sonnet + web_search로 국내 상장기업 발견 (뉴스 우선 + 지식 보완)"""
+    # 1순위: 최근 뉴스 기반
     resp = client.messages.create(
-        model="claude-haiku-4-5-20251001",
-        max_tokens=256,
+        model="claude-sonnet-4-6",
+        max_tokens=1024,
+        tools=[{"type": "web_search_20250305", "name": "web_search"}],
         messages=[{
             "role": "user",
-            "content": f"""문장에서 제품명과 적용분야를 추출해 JSON 객체만 반환하세요. 설명 없이 JSON만.
-
-문장: "{query}"
-형식: {{"product": "제품명", "application": "적용분야"}}
-없으면 빈 문자열. JSON만."""
+            "content": f"""웹 검색으로 "{industry}" 산업 관련 최근 뉴스를 찾아주세요.
+뉴스에 등장하는 한국 KOSPI·KOSDAQ 상장 기업명만 추출해 JSON 문자열 배열로 반환하세요.
+최근에 자주 언급된 기업을 앞에 두세요.
+예: ["기업A", "기업B"]
+JSON 배열만, 설명 없이."""
         }]
     )
-    try:
-        raw = _extract_json(resp.content[0].text, "{")
-        return json.loads(raw) if raw else {"product": "", "application": ""}
-    except Exception:
-        return {"product": "", "application": ""}
+    news_names: list[str] = []
+    for block in resp.content:
+        if hasattr(block, "text") and block.text.strip():
+            try:
+                news_names = _parse_name_list(block.text)
+            except Exception:
+                pass
 
-
-def _query_db(product: str, application: str) -> list[dict]:
-    """segments 테이블에서 매칭 기업 조회"""
-    with get_connection() as conn:
-        rows = conn.execute("""
-            SELECT f.corp_name, s.filing_id, s.revenue_share
-            FROM segments s
-            JOIN filings f ON f.id = s.filing_id
-            WHERE (
-                (? != '' AND (s.product LIKE ? OR s.industry_tags LIKE ?))
-                OR
-                (? != '' AND (s.application LIKE ? OR s.industry_tags LIKE ?))
-            )
-            AND (s.revenue_share >= 10 OR s.revenue_share IS NULL)
-            ORDER BY s.revenue_share DESC NULLS LAST
-        """, (
-            product, f"%{product}%", f"%{product}%",
-            application, f"%{application}%", f"%{application}%",
-        )).fetchall()
-    return [dict(r) for r in rows]
-
-
-def _find_company_names(query: str) -> list[str]:
-    """Claude에게 해당 산업/제품과 관련된 한국 상장 기업명 리스트 요청"""
-    resp = client.messages.create(
-        model="claude-haiku-4-5-20251001",
+    # 2순위: Claude 지식 기반 보완
+    resp2 = client.messages.create(
+        model="claude-sonnet-4-6",
         max_tokens=512,
         messages=[{
             "role": "user",
-            "content": f"""다음 산업/제품 관련 한국 상장 기업명을 JSON 배열만 반환하세요. 설명 없이 배열만.
-
-입력: "{query}"
-예시 출력: ["삼성전기", "삼화콘덴서공업", "아모텍"]
-최대 10개. JSON 배열만."""
+            "content": f""""{industry}" 산업에 직접 종사하는 한국 KOSPI·KOSDAQ 상장 기업을 최대한 많이 찾아주세요.
+대기업부터 중소형까지 포함. 최대 20개. JSON 문자열 배열만.
+예: ["기업A", "기업B"]"""
         }]
     )
     try:
-        raw = _extract_json(resp.content[0].text, "[")
-        return json.loads(raw) if raw else []
+        knowledge_names = _parse_name_list(resp2.content[0].text)
     except Exception:
+        knowledge_names = []
+
+    seen = set(news_names)
+    combined = list(news_names)
+    for name in knowledge_names:
+        if name not in seen:
+            seen.add(name)
+            combined.append(name)
+    return combined
+
+
+def _query_db_by_names(corp_names: list[str]) -> list[dict]:
+    """기업명 리스트로 filings 테이블에서 기업별 최신 신고서 1건씩 조회"""
+    if not corp_names:
         return []
-
-
-def _filter_by_mention(product: str, results: list[dict]) -> list[dict]:
-    """매출 비중 없는 기업은 filing 텍스트 내 키워드 언급 빈도 10회 이상만 포함"""
-    filtered = []
-    for r in results:
-        if r["revenue_share"] is not None:
-            filtered.append(r)
-            continue
-        with get_connection() as conn:
-            row = conn.execute(
-                "SELECT pdf_blob FROM filings WHERE id = ?", (r["filing_id"],)
-            ).fetchone()
-        if row and row["pdf_blob"]:
-            from bs4 import BeautifulSoup
-            text = BeautifulSoup(bytes(row["pdf_blob"]).decode("utf-8", errors="ignore"), features="xml").get_text()
-            if text.count(product) >= 10:
-                filtered.append(r)
-    return filtered
-
-
-def run(query: str) -> tuple[list[dict], str | None]:
-    """사용자 쿼리 → (관련 기업 리스트, 경고 메시지 or None)
-    경고: 해당 산업의 기업 중 2년 내 증권신고서가 하나도 없을 때.
+    placeholders = ",".join("?" * len(corp_names))
+    sql = f"""
+        SELECT f.corp_name, f.corp_code, f.id AS filing_id
+        FROM filings f
+        INNER JOIN (
+            SELECT corp_name, MAX(filed_at) AS max_filed
+            FROM filings
+            WHERE corp_name IN ({placeholders})
+            GROUP BY corp_name
+        ) latest ON f.corp_name = latest.corp_name AND f.filed_at = latest.max_filed
     """
-    keywords = _extract_keywords(query)
-    product = keywords.get("product", "")
-    application = keywords.get("application", "")
+    with get_connection() as conn:
+        rows = conn.execute(sql, corp_names).fetchall()
+    return [{"corp_name": r["corp_name"], "corp_code": r["corp_code"],
+             "filing_id": r["filing_id"], "revenue_share": None} for r in rows]
 
-    results = _query_db(product, application)
 
-    if not results:
-        names = _find_company_names(query)
+def group_by_subsector(companies: list[dict], query: str) -> dict[str, list[str]]:
+    """기업별 세그먼트 데이터 → Claude Sonnet으로 동적 세부 분야 그룹핑"""
+    if not companies:
+        return {}
+
+    filing_ids = list({c["filing_id"] for c in companies})
+    placeholders = ",".join("?" * len(filing_ids))
+
+    with get_connection() as conn:
+        rows = conn.execute(f"""
+            SELECT f.corp_name, s.product, s.application, s.revenue_share
+            FROM segments s JOIN filings f ON f.id = s.filing_id
+            WHERE s.filing_id IN ({placeholders})
+            ORDER BY s.revenue_share DESC NULLS LAST
+        """, filing_ids).fetchall()
+
+    corp_segs: dict[str, list[str]] = {}
+    for r in rows:
+        name = r["corp_name"]
+        seg = f"{r['product'] or ''} / {r['application'] or ''}".strip(" /")
+        corp_segs.setdefault(name, [])
+        if len(corp_segs[name]) < 2 and seg:
+            corp_segs[name].append(seg)
+
+    corp_summary = "\n".join(
+        f"- {name}: {', '.join(segs)}" for name, segs in corp_segs.items() if segs
+    )
+    # 세그먼트 없는 기업도 포함
+    all_names = [c["corp_name"] for c in companies]
+    no_seg = [n for n in all_names if n not in corp_segs]
+    if no_seg:
+        corp_summary += "\n" + "\n".join(f"- {n}: (세그먼트 정보 없음)" for n in no_seg)
+
+    resp = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=512,
+        messages=[{
+            "role": "user",
+            "content": f"""산업: "{query}"
+
+다음 기업들을 밸류체인 위치 또는 사업 특성 기준으로 2~4개 그룹으로 나누세요.
+그룹명은 간결하게(예: "배터리셀", "양극재", "ESS 통합솔루션").
+JSON만 반환. 형식: {{"그룹명": ["기업A", "기업B"]}}
+
+기업 목록:
+{corp_summary}"""
+        }]
+    )
+
+    valid_names = {c["corp_name"] for c in companies}
+    try:
+        raw = _extract_json(resp.content[0].text, "{")
+        result: dict[str, list[str]] = json.loads(raw) if raw else {}
+        validated: dict[str, list[str]] = {}
+        for label, names in result.items():
+            valid = [n for n in names if n in valid_names]
+            if valid:
+                validated[label] = valid
+        classified = {n for ns in validated.values() for n in ns}
+        leftover = list(dict.fromkeys(c["corp_name"] for c in companies if c["corp_name"] not in classified))
+        if leftover:
+            validated["기타"] = leftover
+        return validated
+    except Exception:
+        names = list(dict.fromkeys(c["corp_name"] for c in companies))
+        return {"전체": names}
+
+
+def run(query: str) -> tuple[str, list[dict], dict | None, str | None]:
+    """
+    반환: (mode, companies, subsectors, warning)
+    - mode: "A"(산업만) | "B"(산업+기업직접)
+    - companies: [{corp_name, corp_code, filing_id, revenue_share}]
+    - subsectors: {분야명: [기업명, ...]} (Mode A만, Mode B는 None)
+    - warning: 증권신고서 없을 때 경고 메시지
+    """
+    parsed = _parse_query(query)
+    mode = parsed["mode"]
+    industry = parsed["industry"]
+
+    if mode == "B":
+        corp_names = parsed["corp_names"]
+        corps = find_corps_by_names(corp_names)
+        if corps:
+            collect_by_corps(corps)
+        companies = _query_db_by_names(corp_names)
+        subsectors = None
+    else:
+        # Mode A: 웹서치로 기업 발견
+        names = _find_companies_by_web(industry)
         if names:
             corps = find_corps_by_names(names)
             if corps:
                 collect_by_corps(corps)
-                results = _query_db(product, application)
-
-    results = _filter_by_mention(product, results)
+        companies = _query_db_by_names(names) if names else []
+        subsectors = group_by_subsector(companies, industry) if companies else {}
 
     warning = None
-    if results:
-        filing_ids = [r["filing_id"] for r in results]
+    if companies:
+        filing_ids = [c["filing_id"] for c in companies]
         placeholders = ",".join("?" * len(filing_ids))
         with get_connection() as conn:
             has_sec = conn.execute(
@@ -140,4 +231,4 @@ def run(query: str) -> tuple[list[dict], str | None]:
         if not has_sec:
             warning = "해당 산업의 기업 중 최근 2년 내 증권신고서가 없습니다. 사업보고서 기반으로 분석됩니다."
 
-    return results, warning
+    return mode, companies, subsectors, warning

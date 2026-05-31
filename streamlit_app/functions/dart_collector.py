@@ -9,7 +9,7 @@ from datetime import date, timedelta
 from xml.etree import ElementTree as ET
 from dotenv import load_dotenv
 from .db_manager import get_connection
-from .pdf_parser import extract_business_content
+from .pdf_parser import extract_segments_from_tables, extract_business_content, parse_risk_items
 
 load_dotenv()
 DART_API_KEY = os.getenv("DART_API_KEY")
@@ -83,8 +83,10 @@ def _fetch_one_filing(corp_code: str, pblntf_ty: str, bgn_de: str, end_de: str,
         if data.get("status") != "000" or not data.get("list"):
             return None
         for item in data["list"]:
-            if report_nm_filter and not item.get("report_nm", "").startswith(report_nm_filter):
-                continue
+            if report_nm_filter:
+                nm = item.get("report_nm", "")
+                if not (nm.startswith(report_nm_filter) or nm.startswith(f"[정정]{report_nm_filter}")):
+                    continue
             return item
         if page_no >= data.get("total_page", 1):
             return None
@@ -103,14 +105,41 @@ def _item_to_filing(item: dict, report_type: str) -> dict:
     }
 
 
+def _save_risk_items(filing_id: int, doc_bytes: bytes):
+    items = parse_risk_items(doc_bytes)
+    if not items:
+        return
+    with get_connection() as conn:
+        conn.execute("DELETE FROM risk_items WHERE filing_id = ?", (filing_id,))
+        for item in items:
+            conn.execute(
+                """INSERT INTO risk_items
+                   (filing_id, item_label, parent_label, sub_index, title, content)
+                   VALUES (?, ?, ?, ?, ?, ?)""",
+                (filing_id, item["item_label"], item["parent_label"],
+                 item["sub_index"], item["title"], item["content"]),
+            )
+
+
+def _has_recent_filing(corp_code: str) -> bool:
+    """DB에 2년 이내 신고서가 있으면 True → DART 재수집 스킵"""
+    from datetime import datetime
+    cutoff = (datetime.now() - timedelta(days=730)).strftime("%Y%m%d")
+    with get_connection() as conn:
+        return conn.execute(
+            "SELECT 1 FROM filings WHERE corp_code=? AND filed_at>=? LIMIT 1",
+            [corp_code, cutoff]
+        ).fetchone() is not None
+
+
 def _save_filing_and_segments(f: dict, doc: bytes):
     with get_connection() as conn:
         cursor = conn.execute(
             """INSERT INTO filings
-               (corp_name, corp_code, stock_code, report_type, filed_at, doc_url, pdf_blob)
-               VALUES (?, ?, ?, ?, ?, ?, ?)""",
+               (corp_name, corp_code, stock_code, report_type, filed_at, doc_url)
+               VALUES (?, ?, ?, ?, ?, ?)""",
             (f["corp_name"], f["corp_code"], f["stock_code"],
-             f["report_type"], f["filed_at"], f["doc_url"], doc)
+             f["report_type"], f["filed_at"], f["doc_url"])
         )
         filing_id = cursor.lastrowid
         conn.execute(
@@ -118,6 +147,8 @@ def _save_filing_and_segments(f: dict, doc: bytes):
             (f["corp_code"], f["corp_name"], f["stock_code"])
         )
     _parse_and_save_segments(filing_id, doc)
+    if f["report_type"] == "securities":
+        _save_risk_items(filing_id, doc)
 
 
 def collect_by_corps(corps: list[dict], bgn_de: str = None, end_de: str = None) -> list[str]:
@@ -127,13 +158,17 @@ def collect_by_corps(corps: list[dict], bgn_de: str = None, end_de: str = None) 
     if end_de is None:
         end_de = date.today().strftime("%Y%m%d")
     if bgn_de is None:
-        bgn_de = (date.today() - timedelta(days=730)).strftime("%Y%m%d")
+        bgn_de = (date.today() - timedelta(days=1825)).strftime("%Y%m%d")
 
     fallback_corps: list[str] = []
 
     for corp in corps:
-        # 1순위: 2년 이내 최신 증권신고서
-        item = _fetch_one_filing(corp["corp_code"], "C", bgn_de, end_de)
+        if _has_recent_filing(corp["corp_code"]):
+            print(f"  스킵(캐시): {corp['corp_name']}")
+            continue
+
+        # 1순위: 2년 이내 최신 증권신고서 (발행실적보고서 제외)
+        item = _fetch_one_filing(corp["corp_code"], "C", bgn_de, end_de, report_nm_filter="증권신고서")
         if item:
             f = _item_to_filing(item, "securities")
             if not _filing_exists(f["rcept_no"]):
@@ -228,29 +263,35 @@ def _filing_exists(rcept_no):
 
 
 def _parse_and_save_segments(filing_id: int, pdf_bytes: bytes):
-    """사업의 내용 섹션 파싱 → segments 테이블 저장"""
-    text = extract_business_content(pdf_bytes)
-    if not text.strip():
-        return
+    """사업의 내용 테이블 직접 파싱 → 실패 시 Claude Sonnet 폴백 → segments 저장"""
+    items = extract_segments_from_tables(pdf_bytes)
 
-    resp = _ai.messages.create(
-        model="claude-haiku-4-5-20251001",
-        max_tokens=1024,
-        messages=[{
-            "role": "user",
-            "content": f"""다음 텍스트에서 사업부별 제품·적용분야·매출비중을 추출해 JSON 배열로 반환하세요.
+    if not items:
+        text = extract_business_content(pdf_bytes)
+        if text.strip():
+            resp = _ai.messages.create(
+                model="claude-sonnet-4-6",
+                max_tokens=1024,
+                messages=[{
+                    "role": "user",
+                    "content": f"""다음 텍스트에서 사업부별 제품명·적용분야·매출비중을 추출하세요.
+텍스트에 있는 내용만, 해석·추가 없이 그대로 추출하세요.
 
-[{{"application": "적용분야(예:전기차,AI서버)", "product": "제품명(예:MLCC,안테나)", "revenue_share": 매출비중숫자또는null, "industry_tags": ["태그1","태그2"]}}]
+JSON 배열만 반환:
+[{{"product": "제품명", "application": "적용분야 또는 사업부문", "revenue_share": 매출비중숫자또는null}}]
 
-JSON만 반환. 텍스트: {text[:8000]}"""
-        }]
-    )
-    try:
-        raw = resp.content[0].text
-        start = raw.find("[")
-        end = raw.rfind("]") + 1
-        items = json.loads(raw[start:end])
-    except Exception:
+텍스트:
+{text[:6000]}"""
+                }]
+            )
+            try:
+                raw = resp.content[0].text
+                start, end = raw.find("["), raw.rfind("]") + 1
+                items = json.loads(raw[start:end]) if start != -1 else []
+            except Exception:
+                items = []
+
+    if not items:
         return
 
     with get_connection() as conn:
@@ -263,7 +304,7 @@ JSON만 반환. 텍스트: {text[:8000]}"""
                     item.get("application"),
                     item.get("product"),
                     item.get("revenue_share"),
-                    json.dumps(item.get("industry_tags", []), ensure_ascii=False),
+                    "[]",
                 )
             )
 
@@ -280,10 +321,10 @@ def collect_and_save(bgn_de=None, end_de=None):
         with get_connection() as conn:
             cursor = conn.execute(
                 """INSERT INTO filings
-                   (corp_name, corp_code, stock_code, report_type, filed_at, doc_url, pdf_blob)
-                   VALUES (?, ?, ?, ?, ?, ?, ?)""",
+                   (corp_name, corp_code, stock_code, report_type, filed_at, doc_url)
+                   VALUES (?, ?, ?, ?, ?, ?)""",
                 (f["corp_name"], f["corp_code"], f["stock_code"],
-                 f["report_type"], f["filed_at"], f["doc_url"], pdf_bytes)
+                 f["report_type"], f["filed_at"], f["doc_url"])
             )
             filing_id = cursor.lastrowid
             conn.execute(

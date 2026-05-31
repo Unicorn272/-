@@ -22,7 +22,6 @@ def init_db():
                 report_type TEXT,
                 filed_at DATE NOT NULL,
                 doc_url TEXT,
-                pdf_blob BLOB,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
 
@@ -44,14 +43,30 @@ def init_db():
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
 
-            CREATE TABLE IF NOT EXISTS analysis_results (
+            CREATE TABLE IF NOT EXISTS risk_items (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                filing_id INTEGER UNIQUE REFERENCES filings(id),
-                competitors TEXT,
-                regulations TEXT,
-                threats TEXT,
-                market_data TEXT,
-                news_supplements TEXT,
-                analyzed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                filing_id INTEGER REFERENCES filings(id),
+                item_label TEXT NOT NULL,
+                parent_label TEXT,
+                sub_index INTEGER,
+                title TEXT,
+                content TEXT NOT NULL,
+                parsed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
+
+            CREATE TABLE IF NOT EXISTS industry_analysis (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                industry_key TEXT NOT NULL,
+                corp_codes TEXT NOT NULL,
+                query TEXT,
+                result TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+
+            CREATE UNIQUE INDEX IF NOT EXISTS idx_industry_analysis_key
+                ON industry_analysis(industry_key, corp_codes);
+
+            CREATE INDEX IF NOT EXISTS idx_segments_filing ON segments(filing_id);
+            CREATE INDEX IF NOT EXISTS idx_risk_items_filing ON risk_items(filing_id);
+            CREATE INDEX IF NOT EXISTS idx_filings_corp_code ON filings(corp_code);
         """)
