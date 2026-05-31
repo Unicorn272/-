@@ -88,28 +88,19 @@ elif st.session_state.step == "select":
         add_clicked = st.button("추가", disabled=not manual_name)
 
     if add_clicked and manual_name:
-        from functions.db_manager import get_connection
-        from functions.dart_collector import find_corps_by_names, collect_by_corps
+        from functions.dart_collector import find_corps_by_names
 
         corps = find_corps_by_names([manual_name])
         if not corps:
             st.error(f"'{manual_name}' 기업을 DART에서 찾을 수 없습니다.")
         else:
-            with st.spinner(f"{corps[0]['corp_name']} 신고서 수집 중..."):
-                collect_by_corps(corps)
-            corp_name = corps[0]["corp_name"]
-            with get_connection() as conn:
-                row = conn.execute(
-                    "SELECT id, corp_code FROM filings WHERE corp_name=? ORDER BY filed_at DESC LIMIT 1",
-                    [corp_name]
-                ).fetchone()
-            if not row:
-                st.error(f"{corp_name} 신고서를 찾을 수 없습니다.")
-            elif corp_name in all_corp_names:
+            corp = corps[0]
+            corp_name = corp["corp_name"]
+            if corp_name in all_corp_names:
                 st.info(f"{corp_name}은 이미 목록에 있습니다.")
             else:
-                new_entry = {"corp_name": corp_name, "corp_code": row["corp_code"],
-                             "filing_id": row["id"], "revenue_share": None}
+                new_entry = {"corp_name": corp_name, "corp_code": corp["corp_code"],
+                             "stock_code": corp["stock_code"], "filing_id": None, "revenue_share": None}
                 st.session_state.companies.append(new_entry)
                 subsectors.setdefault("직접 추가", []).append(corp_name)
                 st.session_state.subsectors = subsectors
@@ -121,10 +112,22 @@ elif st.session_state.step == "select":
     col1, col2 = st.columns([2, 2])
     with col1:
         if st.button(f"분석 진행 ({n}개)", type="primary", disabled=n == 0):
-            st.session_state.companies = [
+            selected = [
                 c for c in st.session_state.companies
                 if c["corp_name"] in selected_corps
             ]
+            with st.spinner(f"{n}개 기업 신고서 수집 중..."):
+                from functions.dart_collector import find_corps_by_names, collect_by_corps
+                from agents.filtering_agent import _query_db_by_corp_codes
+                corp_codes = [c["corp_code"] for c in selected if c.get("corp_code")]
+                corps_info = [{"corp_code": c["corp_code"], "corp_name": c["corp_name"],
+                               "stock_code": c.get("stock_code", "")} for c in selected]
+                collect_by_corps(corps_info)
+                companies_with_filings = _query_db_by_corp_codes(corp_codes)
+            if not companies_with_filings:
+                st.error("수집된 신고서가 없습니다.")
+                st.stop()
+            st.session_state.companies = companies_with_filings
             st.session_state.step = "analyze"
             st.rerun()
     with col2:

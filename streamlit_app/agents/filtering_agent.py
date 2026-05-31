@@ -168,32 +168,20 @@ def run(query: str) -> tuple[str, list[dict], dict | None, str | None]:
         subsectors = None
 
     else:
-        # Mode A: 업종코드로 기업 조회
+        # Mode A: 업종코드로 기업 목록만 조회 (수집은 사용자 선택 후)
         keywords = _resolve_keyword(industry)
         corps = []
         for kw in keywords:
             corps.extend(find_corps_by_industry(kw))
-        # 중복 제거
         seen = set()
         corps = [c for c in corps if not (c["corp_code"] in seen or seen.add(c["corp_code"]))]
 
-        if corps:
-            collect_by_corps(corps)
-
-        corp_codes = [c["corp_code"] for c in corps]
-        companies = _query_db_by_corp_codes(corp_codes)
+        # filing_id 없이 반환 (선택 화면 후 수집)
+        companies = [
+            {"corp_name": c["corp_name"], "corp_code": c["corp_code"],
+             "stock_code": c["stock_code"], "filing_id": None, "revenue_share": None}
+            for c in corps
+        ]
         subsectors = group_by_subsector(companies, industry) if companies else {}
 
-    warning = None
-    if companies:
-        filing_ids = [c["filing_id"] for c in companies]
-        placeholders = ",".join("?" * len(filing_ids))
-        with get_connection() as conn:
-            has_sec = conn.execute(
-                f"SELECT 1 FROM filings WHERE id IN ({placeholders}) AND report_type='securities' LIMIT 1",
-                filing_ids,
-            ).fetchone()
-        if not has_sec:
-            warning = "해당 산업의 기업 중 최근 2년 내 증권신고서가 없습니다. 사업보고서 기반으로 분석됩니다."
-
-    return mode, companies, subsectors, warning
+    return mode, companies, subsectors, None

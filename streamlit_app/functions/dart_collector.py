@@ -168,16 +168,21 @@ def find_corps_by_industry(keyword: str) -> list[dict]:
 
 
 def find_corps_by_names(names: list[str]) -> list[dict]:
-    """기업명 리스트 → DART corp_code 매칭 (부분 일치)"""
+    """기업명 리스트 → DART corp_code 매칭 (정확 일치 우선, 그 다음 부분 일치)"""
     corps = _load_corp_list()
     result, seen = [], set()
     for name in names:
-        for corp in corps:
-            if name in corp["corp_name"] or corp["corp_name"] in name:
-                if corp["corp_code"] not in seen:
-                    seen.add(corp["corp_code"])
-                    result.append(corp)
-                break
+        # 1순위: 정확 일치
+        match = next((c for c in corps if c["corp_name"] == name), None)
+        # 2순위: 입력값이 corp_name에 포함 (단, corp_name이 입력값보다 길어야 의미 있음)
+        if not match:
+            match = next((c for c in corps if name in c["corp_name"] and len(name) >= 2), None)
+        # 3순위: corp_name이 입력값에 포함 (단, corp_name 길이가 2자 이상)
+        if not match:
+            match = next((c for c in corps if c["corp_name"] in name and len(c["corp_name"]) >= 2), None)
+        if match and match["corp_code"] not in seen:
+            seen.add(match["corp_code"])
+            result.append(match)
     return result
 
 
