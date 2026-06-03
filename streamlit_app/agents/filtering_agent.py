@@ -1,16 +1,165 @@
 import json
 import os
 import re
+import time
+import requests
 import anthropic
 from dotenv import load_dotenv
 from functions.db_manager import get_connection
-from functions.dart_collector import (
-    find_corps_by_names, find_corps_by_industry,
-    collect_by_corps, INDUSTRY_KEYWORD_MAP,
-)
+from functions.dart_collector import find_corps_by_names, collect_by_corps, find_corps_by_industry, INDUSTRY_KEYWORD_MAP
 
 load_dotenv()
 client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
+
+_etf_cache: dict = {"data": [], "ts": 0}
+
+
+def _load_etf_list() -> list[dict]:
+    """네이버 ETF 전체 목록 (24시간 메모리 캐시)."""
+    if time.time() - _etf_cache["ts"] < 86400 and _etf_cache["data"]:
+        return _etf_cache["data"]
+    try:
+        r = requests.get(
+            "https://finance.naver.com/api/sise/etfItemList.nhn",
+            headers={"User-Agent": "Mozilla/5.0"},
+            timeout=10,
+        )
+        items = r.json().get("result", {}).get("etfItemList", [])
+        _etf_cache["data"] = items
+        _etf_cache["ts"] = time.time()
+        return items
+    except Exception:
+        return []
+
+
+_STOPWORDS = {"산업", "분석", "해줘", "분석해줘", "관련", "섹터", "업종", "시장", "현황", "투자", "주식"}
+
+_KEYWORD_EXPAND = {
+    "제약": ["제약", "바이오", "헬스케어", "헬스", "의약", "생명"],
+    "바이오": ["바이오", "제약", "헬스케어", "헬스", "의약", "생명"],
+    "헬스케어": ["헬스케어", "헬스", "바이오", "제약", "의약"],
+    "반도체": ["반도체", "메모리", "시스템반도체", "칩"],
+    "배터리": ["배터리", "2차전지", "전지", "ESS"],
+    "2차전지": ["2차전지", "배터리", "전지", "ESS"],
+    "ESS": ["ESS", "2차전지", "배터리", "전지", "에너지저장"],
+    "전기차": ["전기차", "EV", "친환경차", "2차전지"],
+    "자동차": ["자동차", "모빌리티", "차량"],
+    "조선": ["조선", "해운", "선박"],
+    "방산": ["방산", "방위", "항공우주"],
+    "로봇": ["로봇", "자동화", "휴머노이드"],
+    "AI": ["AI", "인공지능", "테크", "소프트웨어"],
+    "인공지능": ["인공지능", "AI", "테크"],
+    "게임": ["게임", "엔터", "콘텐츠"],
+    "엔터": ["엔터", "게임", "콘텐츠", "미디어"],
+    "금융": ["금융", "은행", "보험", "증권"],
+    "은행": ["은행", "금융"],
+    "보험": ["보험", "금융"],
+    "건설": ["건설", "부동산", "리츠"],
+    "철강": ["철강", "소재", "금속"],
+    "화학": ["화학", "소재", "석유화학"],
+    "에너지": ["에너지", "태양광", "신재생", "수소"],
+    "태양광": ["태양광", "신재생", "에너지", "수소"],
+    "수소": ["수소", "신재생", "에너지"],
+    "MLCC": ["MLCC", "전자부품", "반도체"],
+    "디스플레이": ["디스플레이", "OLED", "LCD"],
+    "통신": ["통신", "5G", "네트워크"],
+}
+
+def _filter_etfs(industry: str, all_etfs: list[dict]) -> list[dict]:
+    """산업 키워드로 관련 ETF 필터링. 동의어 확장 + 미국/글로벌 ETF 제외."""
+    base_words = [w for w in re.split(r'[\s\[\]()\-/]+', industry)
+                  if len(w) >= 2 and w not in _STOPWORDS]
+    # 동의어 확장
+    expanded = set(base_words)
+    for w in base_words:
+        for key, synonyms in _KEYWORD_EXPAND.items():
+            if w == key or w in synonyms:
+                expanded.update(synonyms)
+    words = list(expanded)
+
+    exclude = ["미국", "글로벌", "US", "Global", "해외"]
+    result = []
+    for etf in all_etfs:
+        name = etf.get("itemname", "")
+        if any(ex in name for ex in exclude):
+            continue
+        if any(w in name for w in words):
+            result.append(etf)
+    return result
+
+
+def _get_companies_and_purposes(industry: str, etfs: list[dict]) -> tuple[list[str], dict | None]:
+    """ETF 목록 → 기업 목록 + 목적별 프리셋 동시 생성 (1 Claude call)."""
+    etf_text = "\n".join(f"- {e['itemname']}" for e in etfs)
+    resp = client.messages.create(
+        model="claude-haiku-4-5-20251001",
+        max_tokens=1024,
+        messages=[{"role": "user", "content": f"""아래 한국 ETF들의 "{industry}" 산업 관련 주요 한국 상장 구성종목을 파악하고,
+분석 목적별 추천 기업 세트를 함께 만들어주세요.
+
+ETF 목록:
+{etf_text}
+
+규칙:
+- 기업은 최대 15개, 미국 상장사 제외, 한국거래소 상장명 그대로
+- **"{industry}"와 직접 관련된 사업을 하는 기업만 포함** (해당 산업이 핵심 매출원인 기업 우선)
+- 해당 산업이 부수적 사업인 대기업(삼성전자, LG전자 등)은 가능한 제외
+- purposes의 각 카테고리에는 해당 역할을 실제로 수행하는 기업만 배치
+- purposes의 기업은 반드시 companies 목록에 있는 기업명만 사용
+- 목적은 해당 산업에서 의미있는 3~4개 관점
+
+JSON만 반환:
+{{
+  "companies": ["기업A", "기업B"],
+  "purposes": {{
+    "목적명1": ["기업A", "기업B"],
+    "목적명2": ["기업C", "기업D"]
+  }}
+}}"""}],
+    )
+    raw = _extract_json(resp.content[0].text, "{")
+    try:
+        data = json.loads(raw) if raw else {}
+        return data.get("companies", []), data.get("purposes") or None
+    except Exception:
+        return [], None
+
+
+def _ask_key_companies_with_purposes(industry: str) -> tuple[list[str], dict | None]:
+    """ETF 없을 때 폴백: web_search로 관련주 검색 → 기업 목록 + 목적 프리셋 한 번에 생성."""
+    resp = client.messages.create(
+        model="claude-haiku-4-5-20251001",
+        max_tokens=1024,
+        tools=[{"type": "web_search_20250305", "name": "web_search", "max_uses": 3}],
+        messages=[{"role": "user", "content": f"""웹 검색으로 "{industry} 관련주", "{industry} 기업 종목"을 검색하세요.
+검색 결과를 바탕으로 "{industry}" 산업의 한국 상장 기업 목록과 분석 목적별 추천 기업 세트를 만들어주세요.
+
+규칙:
+- 검색 결과에서 찾은 기업 우선, "{industry}"와 직접 관련된 기업만 포함
+- 기업은 최대 15개, 한국거래소 상장명 그대로 (DART 등록 정식 기업명)
+- purposes의 각 카테고리에는 해당 역할을 실제로 수행하는 기업만 배치
+- purposes의 기업은 반드시 companies 목록에 있는 기업명만 사용
+- 목적은 해당 산업에서 의미있는 3~4개 관점
+
+JSON만 반환:
+{{
+  "companies": ["기업A", "기업B"],
+  "purposes": {{
+    "목적명1": ["기업A", "기업B"],
+    "목적명2": ["기업C", "기업D"]
+  }}
+}}"""}],
+    )
+    raw = ""
+    for block in resp.content:
+        if hasattr(block, "text") and block.text.strip():
+            raw = block.text
+    raw = _extract_json(raw, "{")
+    try:
+        data = json.loads(raw) if raw else {}
+        return data.get("companies", []), data.get("purposes") or None
+    except Exception:
+        return [], None
 
 
 def _parse_query(query: str) -> dict:
@@ -37,34 +186,6 @@ def _extract_json(text: str, open_bracket: str) -> str:
             if depth == 0:
                 return text[start:i + 1]
     return ""
-
-
-def _resolve_keyword(industry: str) -> list[str]:
-    """산업 키워드를 INDUSTRY_KEYWORD_MAP 키로 매핑. 직접 매칭 없으면 Claude로 추론."""
-    # 직접 매칭
-    for key in INDUSTRY_KEYWORD_MAP:
-        if key in industry or industry in key:
-            return [key]
-
-    # Claude로 가장 가까운 키 추론
-    keys = list(INDUSTRY_KEYWORD_MAP.keys())
-    resp = client.messages.create(
-        model="claude-sonnet-4-6",
-        max_tokens=64,
-        messages=[{
-            "role": "user",
-            "content": f"""다음 산업 키워드 목록에서 "{industry}"와 가장 관련 있는 항목들을 골라 JSON 배열로 반환하세요.
-없으면 빈 배열.
-목록: {keys}
-JSON 배열만, 설명 없이."""
-        }]
-    )
-    try:
-        raw = _extract_json(resp.content[0].text, "[")
-        matched = json.loads(raw) if raw else []
-        return [k for k in matched if k in INDUSTRY_KEYWORD_MAP]
-    except Exception:
-        return []
 
 
 def _query_db_by_names(corp_names: list[str]) -> list[dict]:
@@ -109,55 +230,19 @@ def _query_db_by_corp_codes(corp_codes: list[str]) -> list[dict]:
              "filing_id": r["filing_id"], "revenue_share": None} for r in rows]
 
 
-def group_by_subsector(companies: list[dict], query: str) -> dict[str, list[str]]:
-    """기업 목록 → Claude로 밸류체인 기준 그룹핑"""
-    if not companies:
-        return {}
-
-    corp_names = [c["corp_name"] for c in companies]
-    name_list = "\n".join(f"- {n}" for n in corp_names)
-
-    resp = client.messages.create(
-        model="claude-sonnet-4-6",
-        max_tokens=512,
-        messages=[{
-            "role": "user",
-            "content": f"""산업: "{query}"
-
-다음 기업들을 밸류체인 위치 또는 사업 특성 기준으로 2~4개 그룹으로 나누세요.
-그룹명은 간결하게(예: "배터리셀", "양극재", "ESS 통합솔루션").
-JSON만 반환. 형식: {{"그룹명": ["기업A", "기업B"]}}
-
-기업 목록:
-{name_list}"""
-        }]
-    )
-
-    valid_names = {c["corp_name"] for c in companies}
-    try:
-        raw = _extract_json(resp.content[0].text, "{")
-        result: dict[str, list[str]] = json.loads(raw) if raw else {}
-        validated: dict[str, list[str]] = {}
-        for label, names in result.items():
-            valid = [n for n in names if n in valid_names]
-            if valid:
-                validated[label] = valid
-        classified = {n for ns in validated.values() for n in ns}
-        leftover = [c["corp_name"] for c in companies if c["corp_name"] not in classified]
-        if leftover:
-            validated["기타"] = leftover
-        return validated
-    except Exception:
-        return {"전체": corp_names}
+def _extract_industry_keywords(industry: str) -> list[str]:
+    return [key for key in INDUSTRY_KEYWORD_MAP if key in industry]
 
 
-def run(query: str) -> tuple[str, list[dict], dict | None, str | None]:
+def run(query: str) -> tuple[str, list[dict], str | None, list[str], dict | None]:
     """
-    반환: (mode, companies, subsectors, warning)
+    반환: (mode, companies, warning, etf_sources, purposes)
+    purposes: {"목적명": ["기업A", ...]} — Mode A일 때만, 없으면 None
     """
     parsed = _parse_query(query)
     mode = parsed["mode"]
     industry = parsed["industry"]
+    etf_sources: list[str] = []
 
     if mode == "B":
         corp_names = parsed["corp_names"]
@@ -165,23 +250,46 @@ def run(query: str) -> tuple[str, list[dict], dict | None, str | None]:
         if corps:
             collect_by_corps(corps)
         companies = _query_db_by_names(corp_names)
-        subsectors = None
+        return mode, companies, None, etf_sources, None
 
+    # Mode A: ETF 우선 → 없으면 뉴스+Claude 폴백
+    all_etfs = _load_etf_list()
+    relevant_etfs = _filter_etfs(industry, all_etfs)
+
+    if relevant_etfs:
+        etf_sources = [e["itemname"] for e in relevant_etfs]
+        all_names, purposes = _get_companies_and_purposes(industry, relevant_etfs)
     else:
-        # Mode A: 업종코드로 기업 목록만 조회 (수집은 사용자 선택 후)
-        keywords = _resolve_keyword(industry)
-        corps = []
-        for kw in keywords:
-            corps.extend(find_corps_by_industry(kw))
-        seen = set()
-        corps = [c for c in corps if not (c["corp_code"] in seen or seen.add(c["corp_code"]))]
+        all_names, purposes = _ask_key_companies_with_purposes(industry)
 
-        # filing_id 없이 반환 (선택 화면 후 수집)
-        companies = [
-            {"corp_name": c["corp_name"], "corp_code": c["corp_code"],
-             "stock_code": c["stock_code"], "filing_id": None, "revenue_share": None}
-            for c in corps
-        ]
-        subsectors = group_by_subsector(companies, industry) if companies else {}
+    corp_map = {c["corp_name"]: c for c in find_corps_by_names(all_names)}
 
-    return mode, companies, subsectors, None
+    unmatched = [n for n in all_names if n not in corp_map]
+    if unmatched:
+        for c in find_corps_by_names(unmatched):
+            corp_map.setdefault(c["corp_name"], c)
+
+    companies: list[dict] = []
+    seen: set[str] = set()
+    for name in all_names:
+        c = corp_map.get(name)
+        if c and c["corp_code"] not in seen:
+            seen.add(c["corp_code"])
+            companies.append({
+                "corp_name": c["corp_name"], "corp_code": c["corp_code"],
+                "stock_code": c.get("stock_code", ""), "filing_id": None, "revenue_share": None,
+            })
+
+    if not companies:
+        return mode, [], None, etf_sources, None
+
+    # purposes 유효성 검증: companies에 있는 기업명만 유지
+    if purposes:
+        matched = {c["corp_name"] for c in companies}
+        purposes = {
+            label: [n for n in corps if n in matched]
+            for label, corps in purposes.items()
+            if any(n in matched for n in corps)
+        } or None
+
+    return mode, companies, None, etf_sources, purposes

@@ -22,6 +22,13 @@ REPORT_TYPES = {
     "annual": "A001",    # 사업보고서
 }
 
+# 폴백용 정기보고서 후보 (report_nm_filter, report_type 레이블)
+_PERIODIC_FALLBACKS = [
+    ("사업보고서",  "annual"),
+    ("반기보고서",  "semi-annual"),
+    ("분기보고서",  "quarterly"),
+]
+
 _CORP_CACHE = os.path.join(os.path.dirname(__file__), "../db/corp_cache.json")
 _INDUSTRY_CACHE = os.path.join(os.path.dirname(__file__), "../db/industry_cache.json")
 
@@ -243,13 +250,15 @@ def _save_risk_items(filing_id: int, doc_bytes: bytes):
 
 
 def _has_recent_filing(corp_code: str) -> bool:
-    """DB에 2년 이내 신고서가 있으면 True → DART 재수집 스킵"""
-    from datetime import datetime
-    cutoff = (datetime.now() - timedelta(days=730)).strftime("%Y%m%d")
+    """DB에 risk_items가 있는 증권신고서가 있으면 True → DART 재수집 스킵.
+    증권신고서가 없거나 risk_items가 0이면 False → 재수집 시도."""
     with get_connection() as conn:
         return conn.execute(
-            "SELECT 1 FROM filings WHERE corp_code=? AND filed_at>=? LIMIT 1",
-            [corp_code, cutoff]
+            """SELECT 1 FROM filings f
+               JOIN risk_items r ON r.filing_id = f.id
+               WHERE f.corp_code=? AND f.report_type='securities'
+               LIMIT 1""",
+            [corp_code]
         ).fetchone() is not None
 
 
@@ -297,18 +306,38 @@ def collect_by_corps(corps: list[dict], bgn_de: str = None, end_de: str = None) 
                 if doc:
                     _save_filing_and_segments(f, doc)
                     print(f"  저장: {f['corp_name']} {f['filed_at']} (securities)")
+            else:
+                # 이미 저장된 신고서지만 risk_items가 없으면 재파싱
+                with get_connection() as conn:
+                    row = conn.execute(
+                        "SELECT id FROM filings WHERE doc_url LIKE ?", (f"%{f['rcept_no']}%",)
+                    ).fetchone()
+                    if row:
+                        has_risk = conn.execute(
+                            "SELECT 1 FROM risk_items WHERE filing_id=? LIMIT 1", (row["id"],)
+                        ).fetchone()
+                        if not has_risk:
+                            doc = download_document(f["rcept_no"])
+                            if doc:
+                                _save_risk_items(row["id"], doc)
+                                print(f"  재파싱(risk): {f['corp_name']} {f['filed_at']}")
             continue
 
-        # 2순위: 가장 최근 사업보고서 (기간 제한 없이)
+        # 2순위: 사업보고서·반기보고서·분기보고서 중 가장 최신 1건
         fallback_corps.append(corp["corp_name"])
-        item = _fetch_one_filing(corp["corp_code"], "A", bgn_de, end_de, report_nm_filter="사업보고서")
-        if item:
-            f = _item_to_filing(item, "annual")
+        candidates = []
+        for nm_filter, rtype in _PERIODIC_FALLBACKS:
+            candidate = _fetch_one_filing(corp["corp_code"], "A", bgn_de, end_de, report_nm_filter=nm_filter)
+            if candidate:
+                candidates.append((candidate, rtype))
+        if candidates:
+            best_item, best_rtype = max(candidates, key=lambda x: x[0]["rcept_dt"])
+            f = _item_to_filing(best_item, best_rtype)
             if not _filing_exists(f["rcept_no"]):
                 doc = download_document(f["rcept_no"])
                 if doc:
                     _save_filing_and_segments(f, doc)
-                    print(f"  저장(대체): {f['corp_name']} {f['filed_at']} (annual)")
+                    print(f"  저장(대체): {f['corp_name']} {f['filed_at']} ({best_rtype})")
 
     return fallback_corps
 
@@ -391,7 +420,7 @@ def _parse_and_save_segments(filing_id: int, pdf_bytes: bytes):
         text = extract_business_content(pdf_bytes)
         if text.strip():
             resp = _ai.messages.create(
-                model="claude-sonnet-4-6",
+                model="claude-haiku-4-5-20251001",
                 max_tokens=1024,
                 messages=[{
                     "role": "user",

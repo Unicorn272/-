@@ -60,14 +60,19 @@ def run(extracted: dict, query: str, corp_codes: list[str]) -> dict:
     industry_analysis 테이블에 캐시 저장 (동일 산업+기업 조합이면 즉시 반환)
     """
     industry_key = re.sub(r'\s+', '', query).lower()
-    codes_str = ",".join(sorted(corp_codes))
+    codes_str = ",".join(sorted(set(corp_codes)))
 
-    # 캐시 확인
+    # 캐시 확인 — 동일 쿼리+기업 조합, 없으면 동일 기업 조합만으로도 히트
     with get_connection() as conn:
         row = conn.execute(
             "SELECT result FROM industry_analysis WHERE industry_key=? AND corp_codes=?",
             [industry_key, codes_str]
         ).fetchone()
+        if not row:
+            row = conn.execute(
+                "SELECT result FROM industry_analysis WHERE corp_codes=? ORDER BY id DESC LIMIT 1",
+                [codes_str]
+            ).fetchone()
     if row:
         return json.loads(row["result"])
 
@@ -128,10 +133,11 @@ def run(extracted: dict, query: str, corp_codes: list[str]) -> dict:
   예: "LG에너지솔루션 증권신고서 202602 / SNE리서치(2025.08)"
 - 분석 대상 기업이 1개인 경우, 주어는 해당 기업명 대신 산업명("{query}")으로 작성 (예: "KG모빌리티는~" 대신 "자동차 산업은~")
 - 신고서에 없는 내용 절대 추가 금지
-- data 필드: 원문에 표가 있으면 마크다운 테이블(| 형식) 그대로 인용. 수치·문장은 원문 그대로. 없으면 반드시 빈 문자열."""
+- data 필드: 원문에 표가 있으면 마크다운 테이블(| 형식) 그대로 인용. 수치·문장은 원문 그대로. 없으면 반드시 빈 문자열.
+- 다음 항목은 어떤 섹션에도 포함하지 말 것: 주식매수선택권(스톡옵션) 부여 현황·행사가격·부여 인원, 임직원·경영진 개인 보수·급여·지분율, 주주 구성·최대주주 지분율 등 지배구조 세부사항."""
 
     with client.messages.stream(
-        model="claude-sonnet-4-6",
+        model="claude-haiku-4-5-20251001",
         max_tokens=32000,
         messages=[{"role": "user", "content": prompt}]
     ) as stream:

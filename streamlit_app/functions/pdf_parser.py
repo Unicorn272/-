@@ -5,7 +5,8 @@ warnings.filterwarnings("ignore", category=XMLParsedAsHTMLWarning)
 
 SECTION_KEYWORDS = {
     "사업의 내용": ["II. 사업의 내용", "Ⅱ. 사업의 내용", "사업의 개요"],
-    "투자위험요소": ["III. 투자위험요소", "Ⅲ. 투자위험요소", "투자 위험요소"],
+    # 로마 숫자 번호 관계없이 "투자위험요소" 포함 줄을 헤더로 인식
+    "투자위험요소": ["III. 투자위험요소", "Ⅲ. 투자위험요소", "투자 위험요소", "투자위험요소"],
 }
 
 SECTION_ENDS = {
@@ -51,7 +52,13 @@ def _soup_to_text(soup: BeautifulSoup) -> str:
 
 def _is_section_header(line: str, keywords: list[str]) -> bool:
     stripped = line.strip()
-    return any(stripped == kw or stripped.startswith(kw + " ") or stripped.startswith(kw + "\t") for kw in keywords)
+    for kw in keywords:
+        if stripped == kw or stripped.startswith(kw + " ") or stripped.startswith(kw + "\t"):
+            return True
+        # 짧은 헤더 줄(70자 이하)에서 키워드가 포함되는 경우도 인식 (로마 숫자 번호 다양성 대응)
+        if len(stripped) <= 70 and kw in stripped and re.search(r'^[IVXiⅠ-Ⅹ\d]+[.\s]', stripped):
+            return True
+    return False
 
 
 def _has_real_content(chunks: list[str]) -> bool:
@@ -91,6 +98,8 @@ def _extract_section(doc_bytes: bytes, section: str) -> str:
 
 _ITEM_START = re.compile(r'^(?:\|\s*)?(?:\[)?([가나다라마바사아자차카타파하])\. ', re.MULTILINE)
 _SUB_ITEM = re.compile(r'^(?:\|\s*)?(?:\[)?([가나다라마바사아자차카타파하])-(\d+)\. ', re.MULTILINE)
+# 숫자-한글 방식: "1-가.", "2-나." 형식 (SK하이닉스 등)
+_ITEM_START_NUM = re.compile(r'^\d+-([가나다라마바사아자차카타파하])\. ', re.MULTILINE)
 # 대괄호 헤더 방식 폴백: [제목] 형식
 _BRACKET_HEADER = re.compile(r'^\[([^\]]{5,80})\]$', re.MULTILINE)
 
@@ -112,7 +121,27 @@ def parse_risk_items(doc_bytes: bytes) -> list[dict]:
 
     top_matches = list(_ITEM_START.finditer(section))
 
-    # 가/나/다 패턴 없으면 대괄호 헤더 방식으로 폴백
+    # 가/나/다 패턴 없으면 숫자-한글 방식 시도 (예: "1-가.", "2-나.")
+    if not top_matches:
+        num_matches = list(_ITEM_START_NUM.finditer(section))
+        if num_matches:
+            items = []
+            for i, m in enumerate(num_matches):
+                label = m.group(1)
+                start = m.start()
+                end = num_matches[i + 1].start() if i + 1 < len(num_matches) else len(section)
+                block = section[start:end].strip()
+                title = _extract_title(block, r'^\d+-[가나다라마바사아자차카타파하]\.\s*')
+                items.append({
+                    "item_label": label,
+                    "parent_label": None,
+                    "sub_index": None,
+                    "title": title,
+                    "content": block,
+                })
+            return items
+
+    # 가/나/다 패턴도 없으면 대괄호 헤더 방식으로 폴백
     if not top_matches:
         bracket_matches = list(_BRACKET_HEADER.finditer(section))
         if not bracket_matches:
