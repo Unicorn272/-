@@ -137,7 +137,7 @@ def run(extracted: dict, query: str, corp_codes: list[str]) -> dict:
 - 다음 항목은 어떤 섹션에도 포함하지 말 것: 주식매수선택권(스톡옵션) 부여 현황·행사가격·부여 인원, 임직원·경영진 개인 보수·급여·지분율, 주주 구성·최대주주 지분율 등 지배구조 세부사항."""
 
     with client.messages.stream(
-        model="claude-haiku-4-5-20251001",
+        model="claude-sonnet-4-6",
         max_tokens=32000,
         messages=[{"role": "user", "content": prompt}]
     ) as stream:

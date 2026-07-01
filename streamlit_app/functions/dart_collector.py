@@ -250,14 +250,24 @@ def _save_risk_items(filing_id: int, doc_bytes: bytes):
 
 
 def _has_recent_filing(corp_code: str) -> bool:
-    """DB에 risk_items가 있는 증권신고서가 있으면 True → DART 재수집 스킵.
-    증권신고서가 없거나 risk_items가 0이면 False → 재수집 시도."""
+    """DB에 risk_items가 있는 증권신고서가 있으면 True → 증권신고서 재수집 스킵."""
     with get_connection() as conn:
         return conn.execute(
             """SELECT 1 FROM filings f
                JOIN risk_items r ON r.filing_id = f.id
                WHERE f.corp_code=? AND f.report_type='securities'
                LIMIT 1""",
+            [corp_code]
+        ).fetchone() is not None
+
+
+def _has_segment_data(corp_code: str) -> bool:
+    """segments 데이터가 있으면 True → 정기보고서 segment 수집 스킵."""
+    with get_connection() as conn:
+        return conn.execute(
+            """SELECT 1 FROM segments s
+               JOIN filings f ON s.filing_id = f.id
+               WHERE f.corp_code=? LIMIT 1""",
             [corp_code]
         ).fetchone() is not None
 
@@ -293,51 +303,52 @@ def collect_by_corps(corps: list[dict], bgn_de: str = None, end_de: str = None) 
     fallback_corps: list[str] = []
 
     for corp in corps:
-        if _has_recent_filing(corp["corp_code"]):
-            print(f"  스킵(캐시): {corp['corp_name']}")
-            continue
+        corp_code = corp["corp_code"]
 
-        # 1순위: 2년 이내 최신 증권신고서 (발행실적보고서 제외)
-        item = _fetch_one_filing(corp["corp_code"], "C", bgn_de, end_de, report_nm_filter="증권신고서")
-        if item:
-            f = _item_to_filing(item, "securities")
-            if not _filing_exists(f["rcept_no"]):
-                doc = download_document(f["rcept_no"])
-                if doc:
-                    _save_filing_and_segments(f, doc)
-                    print(f"  저장: {f['corp_name']} {f['filed_at']} (securities)")
-            else:
-                # 이미 저장된 신고서지만 risk_items가 없으면 재파싱
-                with get_connection() as conn:
-                    row = conn.execute(
-                        "SELECT id FROM filings WHERE doc_url LIKE ?", (f"%{f['rcept_no']}%",)
-                    ).fetchone()
-                    if row:
-                        has_risk = conn.execute(
-                            "SELECT 1 FROM risk_items WHERE filing_id=? LIMIT 1", (row["id"],)
+        # ── 증권신고서 (산업분석용 risk_items) ────────────────────────────────
+        if not _has_recent_filing(corp_code):
+            item = _fetch_one_filing(corp_code, "C", bgn_de, end_de, report_nm_filter="증권신고서")
+            if item:
+                f = _item_to_filing(item, "securities")
+                if not _filing_exists(f["rcept_no"]):
+                    doc = download_document(f["rcept_no"])
+                    if doc:
+                        _save_filing_and_segments(f, doc)
+                        print(f"  저장: {f['corp_name']} {f['filed_at']} (securities)")
+                else:
+                    with get_connection() as conn:
+                        row = conn.execute(
+                            "SELECT id FROM filings WHERE doc_url LIKE ?", (f"%{f['rcept_no']}%",)
                         ).fetchone()
-                        if not has_risk:
-                            doc = download_document(f["rcept_no"])
-                            if doc:
-                                _save_risk_items(row["id"], doc)
-                                print(f"  재파싱(risk): {f['corp_name']} {f['filed_at']}")
-            continue
+                        if row:
+                            has_risk = conn.execute(
+                                "SELECT 1 FROM risk_items WHERE filing_id=? LIMIT 1", (row["id"],)
+                            ).fetchone()
+                            if not has_risk:
+                                doc = download_document(f["rcept_no"])
+                                if doc:
+                                    _save_risk_items(row["id"], doc)
+                                    print(f"  재파싱(risk): {f['corp_name']} {f['filed_at']}")
+            else:
+                fallback_corps.append(corp["corp_name"])
 
-        # 2순위: 사업보고서·반기보고서·분기보고서 중 가장 최신 1건
-        fallback_corps.append(corp["corp_name"])
-        candidates = []
-        for nm_filter, rtype in _PERIODIC_FALLBACKS:
-            candidate = _fetch_one_filing(corp["corp_code"], "A", bgn_de, end_de, report_nm_filter=nm_filter)
-            if candidate:
-                candidates.append((candidate, rtype))
-        if candidates:
-            best_item, best_rtype = max(candidates, key=lambda x: x[0]["rcept_dt"])
-            f = _item_to_filing(best_item, best_rtype)
-            if not _filing_exists(f["rcept_no"]):
-                doc = download_document(f["rcept_no"])
-                if doc:
-                    _save_filing_and_segments(f, doc)
-                    print(f"  저장(대체): {f['corp_name']} {f['filed_at']} ({best_rtype})")
+        # ── 정기보고서 (segment 매출비중용) — 데이터 없을 때만 수집 ──────────
+        if not _has_segment_data(corp_code):
+            candidates = []
+            for nm_filter, rtype in _PERIODIC_FALLBACKS:
+                candidate = _fetch_one_filing(corp_code, "A", bgn_de, end_de, report_nm_filter=nm_filter)
+                if candidate:
+                    candidates.append((candidate, rtype))
+            if candidates:
+                best_item, best_rtype = max(candidates, key=lambda x: x[0]["rcept_dt"])
+                f = _item_to_filing(best_item, best_rtype)
+                if not _filing_exists(f["rcept_no"]):
+                    doc = download_document(f["rcept_no"])
+                    if doc:
+                        _save_filing_and_segments(f, doc)
+                        print(f"  저장(segment): {f['corp_name']} {f['filed_at']} ({best_rtype})")
+            else:
+                print(f"  정기보고서 없음(segment 스킵): {corp['corp_name']}")
 
     return fallback_corps
 

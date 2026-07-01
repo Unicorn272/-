@@ -1,0 +1,671 @@
+{
+  "ts": 1782301526.2897983,
+  "data": {
+    "반도체": [
+      {
+        "name": "삼성전자",
+        "stock_code": "005930",
+        "corp_code": "00126380",
+        "weight": 15.0
+      },
+      {
+        "name": "SK하이닉스",
+        "stock_code": "000660",
+        "corp_code": "00164779",
+        "weight": 12.0
+      },
+      {
+        "name": "NAVER",
+        "stock_code": "035420",
+        "corp_code": "00266961",
+        "weight": 8.0
+      },
+      {
+        "name": "카카오",
+        "stock_code": "035720",
+        "corp_code": "00258801",
+        "weight": 6.0
+      },
+      {
+        "name": "삼성SDI",
+        "stock_code": "006400",
+        "corp_code": "00126362",
+        "weight": 5.0
+      },
+      {
+        "name": "LG디스플레이",
+        "stock_code": "034220",
+        "corp_code": "00105873",
+        "weight": 4.5
+      },
+      {
+        "name": "LG전자",
+        "stock_code": "066570",
+        "corp_code": "00401731",
+        "weight": 4.0
+      },
+      {
+        "name": "현대전자",
+        "stock_code": "",
+        "corp_code": "",
+        "weight": 3.5
+      },
+      {
+        "name": "넷마블",
+        "stock_code": "251270",
+        "corp_code": "00904672",
+        "weight": 2.5
+      },
+      {
+        "name": "펄어비스",
+        "stock_code": "263750",
+        "corp_code": "01152470",
+        "weight": 2.0
+      },
+      {
+        "name": "셀트리온",
+        "stock_code": "068270",
+        "corp_code": "00413046",
+        "weight": 1.5
+      },
+      {
+        "name": "에코프로",
+        "stock_code": "086520",
+        "corp_code": "00536541",
+        "weight": 1.0
+      }
+    ],
+    "2차전지": [
+      {
+        "name": "삼성SDI",
+        "stock_code": "006400",
+        "corp_code": "00126362",
+        "weight": 18.0
+      },
+      {
+        "name": "LG에너지솔루션",
+        "stock_code": "373220",
+        "corp_code": "01515323",
+        "weight": 16.0
+      },
+      {
+        "name": "SK이노베이션",
+        "stock_code": "096770",
+        "corp_code": "00631518",
+        "weight": 14.0
+      },
+      {
+        "name": "포스코퓨처엠",
+        "stock_code": "003670",
+        "corp_code": "00155276",
+        "weight": 12.0
+      },
+      {
+        "name": "에코프로",
+        "stock_code": "086520",
+        "corp_code": "00536541",
+        "weight": 10.0
+      },
+      {
+        "name": "에코프로비엠",
+        "stock_code": "247540",
+        "corp_code": "01160363",
+        "weight": 8.0
+      },
+      {
+        "name": "삼천당제약",
+        "stock_code": "000250",
+        "corp_code": "00128546",
+        "weight": 3.0
+      },
+      {
+        "name": "코스모신소재",
+        "stock_code": "005070",
+        "corp_code": "00129989",
+        "weight": 2.5
+      },
+      {
+        "name": "휴스롬",
+        "stock_code": "",
+        "corp_code": "",
+        "weight": 2.0
+      },
+      {
+        "name": "앰플리티",
+        "stock_code": "",
+        "corp_code": "",
+        "weight": 1.5
+      },
+      {
+        "name": "명신산업",
+        "stock_code": "009900",
+        "corp_code": "00173078",
+        "weight": 1.0
+      },
+      {
+        "name": "어보브반도체",
+        "stock_code": "102120",
+        "corp_code": "00591441",
+        "weight": 1.0
+      }
+    ],
+    "자동차": [
+      {
+        "name": "현대자동차",
+        "stock_code": "005380",
+        "corp_code": "00164742",
+        "weight": 20.0
+      },
+      {
+        "name": "기아",
+        "stock_code": "000270",
+        "corp_code": "00106641",
+        "weight": 18.0
+      },
+      {
+        "name": "현대모비스",
+        "stock_code": "012330",
+        "corp_code": "00164788",
+        "weight": 15.0
+      },
+      {
+        "name": "현대위아",
+        "stock_code": "011210",
+        "corp_code": "00106623",
+        "weight": 10.0
+      },
+      {
+        "name": "만도",
+        "stock_code": "",
+        "corp_code": "",
+        "weight": 8.0
+      },
+      {
+        "name": "대성하이텍",
+        "stock_code": "129920",
+        "corp_code": "00577335",
+        "weight": 6.0
+      },
+      {
+        "name": "한온시스템",
+        "stock_code": "018880",
+        "corp_code": "00161125",
+        "weight": 5.0
+      },
+      {
+        "name": "경신기전",
+        "stock_code": "",
+        "corp_code": "",
+        "weight": 4.0
+      },
+      {
+        "name": "다나와",
+        "stock_code": "",
+        "corp_code": "",
+        "weight": 2.0
+      },
+      {
+        "name": "세아제강",
+        "stock_code": "306200",
+        "corp_code": "01325979",
+        "weight": 1.5
+      },
+      {
+        "name": "현대제철",
+        "stock_code": "004020",
+        "corp_code": "00145880",
+        "weight": 1.0
+      },
+      {
+        "name": "한라산업",
+        "stock_code": "",
+        "corp_code": "",
+        "weight": 1.0
+      }
+    ],
+    "바이오": [
+      {
+        "name": "셀트리온",
+        "stock_code": "068270",
+        "corp_code": "00413046",
+        "weight": 14.0
+      },
+      {
+        "name": "삼성바이오로직스",
+        "stock_code": "207940",
+        "corp_code": "00877059",
+        "weight": 12.0
+      },
+      {
+        "name": "에이비엘바이오",
+        "stock_code": "298380",
+        "corp_code": "01256864",
+        "weight": 8.0
+      },
+      {
+        "name": "녹십자",
+        "stock_code": "006280",
+        "corp_code": "00129679",
+        "weight": 7.0
+      },
+      {
+        "name": "SK바이오팜",
+        "stock_code": "",
+        "corp_code": "",
+        "weight": 6.5
+      },
+      {
+        "name": "보령약품",
+        "stock_code": "",
+        "corp_code": "",
+        "weight": 5.0
+      },
+      {
+        "name": "휴젤",
+        "stock_code": "145020",
+        "corp_code": "00888347",
+        "weight": 4.5
+      },
+      {
+        "name": "메디톱스",
+        "stock_code": "",
+        "corp_code": "",
+        "weight": 4.0
+      },
+      {
+        "name": "제넥신",
+        "stock_code": "095700",
+        "corp_code": "00545929",
+        "weight": 3.5
+      },
+      {
+        "name": "셀트리온헬스케어",
+        "stock_code": "091990",
+        "corp_code": "00554024",
+        "weight": 3.0
+      },
+      {
+        "name": "동화약품",
+        "stock_code": "000020",
+        "corp_code": "00119195",
+        "weight": 2.0
+      },
+      {
+        "name": "우리바이오",
+        "stock_code": "082850",
+        "corp_code": "00369107",
+        "weight": 1.5
+      }
+    ],
+    "금융": [
+      {
+        "name": "KB금융",
+        "stock_code": "105560",
+        "corp_code": "00688996",
+        "weight": 18.0
+      },
+      {
+        "name": "신한금융지주",
+        "stock_code": "",
+        "corp_code": "",
+        "weight": 16.0
+      },
+      {
+        "name": "하나금융지주",
+        "stock_code": "086790",
+        "corp_code": "00547583",
+        "weight": 14.0
+      },
+      {
+        "name": "우리금융지주",
+        "stock_code": "053000",
+        "corp_code": "00375302",
+        "weight": 12.0
+      },
+      {
+        "name": "NH투자증권",
+        "stock_code": "005940",
+        "corp_code": "00120182",
+        "weight": 8.0
+      },
+      {
+        "name": "한국투자금융지주",
+        "stock_code": "",
+        "corp_code": "",
+        "weight": 6.0
+      },
+      {
+        "name": "삼성증권",
+        "stock_code": "016360",
+        "corp_code": "00104856",
+        "weight": 5.0
+      },
+      {
+        "name": "대우증권",
+        "stock_code": "",
+        "corp_code": "",
+        "weight": 4.0
+      },
+      {
+        "name": "교보증권",
+        "stock_code": "030610",
+        "corp_code": "00113359",
+        "weight": 3.0
+      },
+      {
+        "name": "이베스트투자증권",
+        "stock_code": "",
+        "corp_code": "",
+        "weight": 2.0
+      },
+      {
+        "name": "한국은행",
+        "stock_code": "",
+        "corp_code": "",
+        "weight": 1.5
+      },
+      {
+        "name": "토스뱅크",
+        "stock_code": "",
+        "corp_code": "",
+        "weight": 1.0
+      }
+    ],
+    "방산": [
+      {
+        "name": "현대로템",
+        "stock_code": "064350",
+        "corp_code": "00302926",
+        "weight": 16.0
+      },
+      {
+        "name": "한화에어로스페이스",
+        "stock_code": "012450",
+        "corp_code": "00126566",
+        "weight": 14.0
+      },
+      {
+        "name": "한화시스템",
+        "stock_code": "272210",
+        "corp_code": "00339391",
+        "weight": 12.0
+      },
+      {
+        "name": "LIG넥스원",
+        "stock_code": "",
+        "corp_code": "",
+        "weight": 11.0
+      },
+      {
+        "name": "한화투자증권",
+        "stock_code": "003530",
+        "corp_code": "00148610",
+        "weight": 9.0
+      },
+      {
+        "name": "포스코인터내셔널",
+        "stock_code": "047050",
+        "corp_code": "00124504",
+        "weight": 8.0
+      },
+      {
+        "name": "한화큐셀",
+        "stock_code": "",
+        "corp_code": "",
+        "weight": 7.0
+      },
+      {
+        "name": "세아제강",
+        "stock_code": "306200",
+        "corp_code": "01325979",
+        "weight": 5.0
+      },
+      {
+        "name": "신영기업",
+        "stock_code": "",
+        "corp_code": "",
+        "weight": 4.0
+      },
+      {
+        "name": "삼성전기",
+        "stock_code": "009150",
+        "corp_code": "00126371",
+        "weight": 3.0
+      },
+      {
+        "name": "경부엔지니어링",
+        "stock_code": "",
+        "corp_code": "",
+        "weight": 2.0
+      },
+      {
+        "name": "KAI",
+        "stock_code": "",
+        "corp_code": "",
+        "weight": 1.0
+      }
+    ],
+    "조선": [
+      {
+        "name": "현대중공업",
+        "stock_code": "",
+        "corp_code": "",
+        "weight": 22.0
+      },
+      {
+        "name": "삼성중공업",
+        "stock_code": "010140",
+        "corp_code": "00126478",
+        "weight": 20.0
+      },
+      {
+        "name": "대우조선해양",
+        "stock_code": "",
+        "corp_code": "",
+        "weight": 18.0
+      },
+      {
+        "name": "한진중공업",
+        "stock_code": "",
+        "corp_code": "",
+        "weight": 12.0
+      },
+      {
+        "name": "현대미포조선",
+        "stock_code": "",
+        "corp_code": "",
+        "weight": 10.0
+      },
+      {
+        "name": "명신산업",
+        "stock_code": "009900",
+        "corp_code": "00173078",
+        "weight": 5.0
+      },
+      {
+        "name": "대한조선기자재",
+        "stock_code": "",
+        "corp_code": "",
+        "weight": 4.0
+      },
+      {
+        "name": "두산중공업",
+        "stock_code": "",
+        "corp_code": "",
+        "weight": 3.0
+      },
+      {
+        "name": "현대오일뱅크",
+        "stock_code": "",
+        "corp_code": "",
+        "weight": 2.0
+      },
+      {
+        "name": "STX엔진",
+        "stock_code": "077970",
+        "corp_code": "00480455",
+        "weight": 1.5
+      },
+      {
+        "name": "현대글로벌서비스",
+        "stock_code": "",
+        "corp_code": "",
+        "weight": 1.0
+      },
+      {
+        "name": "선조선",
+        "stock_code": "",
+        "corp_code": "",
+        "weight": 1.0
+      }
+    ],
+    "소프트웨어": [
+      {
+        "name": "NAVER",
+        "stock_code": "035420",
+        "corp_code": "00266961",
+        "weight": 16.0
+      },
+      {
+        "name": "카카오",
+        "stock_code": "035720",
+        "corp_code": "00258801",
+        "weight": 14.0
+      },
+      {
+        "name": "라인(현 야후)",
+        "stock_code": "",
+        "corp_code": "",
+        "weight": 10.0
+      },
+      {
+        "name": "쿠팡",
+        "stock_code": "",
+        "corp_code": "",
+        "weight": 9.0
+      },
+      {
+        "name": "넷마블",
+        "stock_code": "251270",
+        "corp_code": "00904672",
+        "weight": 8.0
+      },
+      {
+        "name": "펄어비스",
+        "stock_code": "263750",
+        "corp_code": "01152470",
+        "weight": 7.0
+      },
+      {
+        "name": "넥슨",
+        "stock_code": "",
+        "corp_code": "",
+        "weight": 6.0
+      },
+      {
+        "name": "위메이드",
+        "stock_code": "112040",
+        "corp_code": "00444329",
+        "weight": 5.0
+      },
+      {
+        "name": "크래프톤",
+        "stock_code": "259960",
+        "corp_code": "00760971",
+        "weight": 4.0
+      },
+      {
+        "name": "엔씨소프트",
+        "stock_code": "",
+        "corp_code": "",
+        "weight": 3.5
+      },
+      {
+        "name": "지메일",
+        "stock_code": "",
+        "corp_code": "",
+        "weight": 1.0
+      },
+      {
+        "name": "데브시스터즈",
+        "stock_code": "194480",
+        "corp_code": "01008762",
+        "weight": 1.0
+      }
+    ],
+    "에너지/화학": [
+      {
+        "name": "SK이노베이션",
+        "stock_code": "096770",
+        "corp_code": "00631518",
+        "weight": 14.0
+      },
+      {
+        "name": "GS에너지",
+        "stock_code": "",
+        "corp_code": "",
+        "weight": 12.0
+      },
+      {
+        "name": "현대오일뱅크",
+        "stock_code": "",
+        "corp_code": "",
+        "weight": 11.0
+      },
+      {
+        "name": "롯데화학",
+        "stock_code": "",
+        "corp_code": "",
+        "weight": 10.0
+      },
+      {
+        "name": "한화큐셀",
+        "stock_code": "",
+        "corp_code": "",
+        "weight": 9.0
+      },
+      {
+        "name": "포스코에너지",
+        "stock_code": "",
+        "corp_code": "",
+        "weight": 8.0
+      },
+      {
+        "name": "한솔화학",
+        "stock_code": "",
+        "corp_code": "",
+        "weight": 7.0
+      },
+      {
+        "name": "LG화학",
+        "stock_code": "051910",
+        "corp_code": "00356361",
+        "weight": 6.0
+      },
+      {
+        "name": "삼성전자",
+        "stock_code": "005930",
+        "corp_code": "00126380",
+        "weight": 5.0
+      },
+      {
+        "name": "에스-오일",
+        "stock_code": "",
+        "corp_code": "",
+        "weight": 4.0
+      },
+      {
+        "name": "한국전력",
+        "stock_code": "",
+        "corp_code": "",
+        "weight": 3.0
+      },
+      {
+        "name": "대한유화",
+        "stock_code": "006650",
+        "corp_code": "00260383",
+        "weight": 1.0
+      }
+    ]
+  }
+}

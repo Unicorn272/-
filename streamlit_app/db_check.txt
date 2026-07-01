@@ -1,0 +1,49 @@
+=== filings ===
+id=3 | 핸즈코퍼레이션 | 20260526 | securities | 5,521,608bytes
+id=4 | 티앤알바이오팹 | 20260526 | securities | 1,644,084bytes
+
+=== segments ===
+id=1 | filing=4
+  product   : 3D 바이오 프린팅 시스템(3DX Printer)
+  application: 장기 이식, 조직 재생, 신약 테스트, 맞춤형 의학
+  share     : None
+  tags      : ['재생의학', '의료기기', '바이오기술']
+id=2 | filing=4
+  product   : 바이오잉크(ECM 기반)
+  application: 장기 재생, 조직 공학, 신약 테스트
+  share     : None
+  tags      : ['재생의학', '바이오재료', '세포 프린팅']
+id=3 | filing=4
+  product   : 생분해성 인공지지체(T Mesh, T Nasal Mesh, T CFI, T PSI)
+  application: 두개악안면 재건, 두개악안면 교정 성형, 신경외과 수술
+  share     : None
+  tags      : ['재생의학', '의료기기', '외과용 임플란트']
+id=4 | filing=4
+  product   : 창상피복재, ADM(무세포진피기질), 복합지혈제
+  application: 수술 창상 치료, 지혈
+  share     : None
+  tags      : ['바이오써지컬솔루션', '의료기기', '외과용']
+id=5 | filing=4
+  product   : 동결건조볼 캡슐 스킨케어 화장품
+  application: 스킨케어
+  share     : None
+  tags      : ['화장품', '스킨케어', '동결건조 기술']
+id=6 | filing=4
+  product   : 블리스터 팩키징
+  application: 화장품 포장
+  share     : None
+  tags      : ['화장품', '포장기술']
+id=7 | filing=4
+  product   : 3D 오가노이드
+  application: 장기 유사체 개발, 재생의학 연구
+  share     : None
+  tags      : ['재생의학', '세포 기술', '의료기기']
+id=8 | filing=4
+  product   : 3D 세포치료제
+  application: 세포 치료
+  share     : None
+  tags      : ['재생의학', '세포 치료', '의료기기']
+
+=== companies ===
+00119140 | 핸즈코퍼레이션 | 143210
+01109937 | 티앤알바이오팹 | 246710

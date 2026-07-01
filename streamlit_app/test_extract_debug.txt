@@ -1,0 +1,8 @@
+companies count: 3
+  {'corp_name': '삼화콘덴서공업', 'filing_id': 34, 'revenue_share': 46.1}
+  {'corp_name': '삼성전기', 'filing_id': 33, 'revenue_share': 45.95}
+  {'corp_name': '아모텍', 'filing_id': 32, 'revenue_share': None}
+competitors: 0
+threats: 12
+regulations: 1
+market_data: 25

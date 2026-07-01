@@ -71,6 +71,7 @@ def _build_sheet1(wb: Workbook, sections: list[dict]):
     ws.column_dimensions["B"].width = 8
     ws.column_dimensions["C"].width = 32
     ws.column_dimensions["D"].width = 58
+    ws.sheet_properties.outlinePr.summaryBelow = False
 
     ws.row_dimensions[1].height = 22
     for col, text in enumerate(["Section", "장", "제목", "내용/핵심메시지"], start=1):
@@ -96,6 +97,8 @@ def _build_sheet1(wb: Workbook, sections: list[dict]):
             title = ch.get("title", "")
             desc  = ch.get("description", "")
             ws.row_dimensions[row].height = _row_h((title, 32), (desc, 58))
+            ws.row_dimensions[row].outlineLevel = 1
+            ws.row_dimensions[row].hidden = True
             for c in range(1, 5):
                 ws.cell(row=row, column=c).fill = _fill(WHITE)
                 ws.cell(row=row, column=c).border = _border
@@ -115,6 +118,8 @@ def _build_sheet1(wb: Workbook, sections: list[dict]):
 
         key_msg = sec.get("key_message", "")
         ws.row_dimensions[row].height = _row_h((key_msg, 105))
+        ws.row_dimensions[row].outlineLevel = 1
+        ws.row_dimensions[row].hidden = True
         ws.merge_cells(f"A{row}:D{row}")
         cell = ws.cell(row=row, column=1, value=key_msg)
         cell.fill = _fill(GRAY_BG)
@@ -207,6 +212,7 @@ def _build_sheet2(wb: Workbook, sections: list[dict], data_limitations: list[str
     ws.column_dimensions["A"].width = 36
     ws.column_dimensions["B"].width = 42
     ws.column_dimensions["C"].width = 30
+    ws.sheet_properties.outlinePr.summaryBelow = False
 
     ws.row_dimensions[1].height = 22
     for col, text in enumerate(["항목", "데이터/수치 (신고서 원문)", "출처"], start=1):
@@ -218,7 +224,7 @@ def _build_sheet2(wb: Workbook, sections: list[dict], data_limitations: list[str
 
     row = 2
     for sec in sections:
-        # Section 헤더
+        # Section 헤더 (visible, 그룹 기준 행)
         ws.row_dimensions[row].height = 22
         ws.merge_cells(f"A{row}:C{row}")
         cell = ws.cell(row=row, column=1,
@@ -230,8 +236,10 @@ def _build_sheet2(wb: Workbook, sections: list[dict], data_limitations: list[str
         row += 1
 
         for ch in sec.get("chapters", []):
-            # 장 헤더
+            # 장 헤더 - level 1 그룹 (기본 collapsed)
             ws.row_dimensions[row].height = 22
+            ws.row_dimensions[row].outlineLevel = 1
+            ws.row_dimensions[row].hidden = True
             ws.merge_cells(f"A{row}:C{row}")
             cell = ws.cell(row=row, column=1,
                            value=f"{ch.get('no', '')}장  {ch.get('title', '')}")
@@ -242,7 +250,12 @@ def _build_sheet2(wb: Workbook, sections: list[dict], data_limitations: list[str
             row += 1
 
             for item in ch.get("data", []):
+                data_start = row
                 row = _write_data_item(ws, row, item)
+                # 데이터 행 - level 2 그룹 (기본 collapsed)
+                for r in range(data_start, row):
+                    ws.row_dimensions[r].outlineLevel = 2
+                    ws.row_dimensions[r].hidden = True
 
         row += 1  # 섹션 간 여백
 

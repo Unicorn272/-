@@ -300,4 +300,3 @@ elif st.session_state.step in ("analyze", "done"):
                 stream_response(analysis, query, api_messages)
             )
         st.session_state.chat_messages.append({"role": "assistant", "content": response})
-        st.rerun()

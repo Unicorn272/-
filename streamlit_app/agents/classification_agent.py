@@ -12,16 +12,21 @@ client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
 
 def _get_segments(corp_code: str) -> list:
     with get_connection() as conn:
+        # 보고서 종류 무관 가장 최근 filing 1개의 세그먼트만 조회
+        row = conn.execute(
+            "SELECT id FROM filings WHERE corp_code = ? ORDER BY filed_at DESC LIMIT 1",
+            (corp_code,),
+        ).fetchone()
+        if not row:
+            return []
         rows = conn.execute(
             """
             SELECT s.product, s.application, s.revenue_share, f.filed_at, f.report_type
             FROM segments s
             JOIN filings f ON s.filing_id = f.id
-            WHERE f.corp_code = ?
-            ORDER BY f.filed_at DESC
-            LIMIT 30
+            WHERE s.filing_id = ?
             """,
-            (corp_code,),
+            (row["id"],),
         ).fetchall()
     return [dict(r) for r in rows]
 
@@ -95,10 +100,13 @@ def run(corp_name: str, industry: str) -> dict:
 
 이 기업이 "{industry}" 산업에 포함되는지 판정하세요.
 
-판정 기준:
-- 포함: 해당 산업이 주력 사업이거나 매출 비중이 유의미한 경우
-- 부분포함: 해당 산업 관련 사업이 있지만 주력이 아닌 경우
-- 미포함: 해당 산업과 무관한 경우
+판정 기준 (GICS 기반, 매출 비중 수치가 있으면 수치만으로 판정하고 예외 없음):
+- 포함: 해당 산업 매출 비중 60% 이상
+- 부분포함: 매출 비중 50% 이상 60% 미만
+- 미포함: 매출 비중 50% 미만 (복수 세그먼트를 합산해도 50% 미만이면 미포함)
+- 매출 비중 수치가 전혀 없을 때만 사업부문·제품명 키워드로 판단하고 신뢰도를 낮음으로 표시
+
+중요: 매출 비중 수치가 존재하는 경우, 사업 중요성·전략적 의미 등 다른 해석을 개입시키지 마세요.
 
 JSON으로만 반환하세요:
 {{

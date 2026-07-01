@@ -1,0 +1,281 @@
+=== FILINGS ===
+{'id': 32, 'corp_name': '아모텍', 'report_type': 'securities', 'filed_at': 20260522}
+{'id': 33, 'corp_name': '삼성전기', 'report_type': 'annual', 'filed_at': 20260310}
+{'id': 34, 'corp_name': '삼화콘덴서공업', 'report_type': 'annual', 'filed_at': 20260319}
+
+=== SEGMENTS ===
+{'filing_id': 33, 'application': '스마트폰용, 전장용, PC용 등', 'product': '수동소자(MLCC, Inductor, Chip Resistor 등)', 'revenue_share': 45.95, 'industry_tags': '["스마트폰", "전장", "PC", "컴포넌트"]'}
+{'filing_id': 33, 'application': 'PC용, 스마트폰용 등', 'product': '반도체패키지기판', 'revenue_share': 20.34, 'industry_tags': '["PC", "스마트폰", "반도체패키지"]'}
+{'filing_id': 33, 'application': '스마트폰용, 전장용 등', 'product': '카메라모듈', 'revenue_share': 33.71, 'industry_tags': '["스마트폰", "전장", "광학솔루션", "카메라"]'}
+{'filing_id': 34, 'application': '전기, 전자부품', 'product': 'MLCC', 'revenue_share': 46.1, 'industry_tags': '["전자부품", "콘덴서"]'}
+{'filing_id': 34, 'application': '전력용', 'product': 'FC', 'revenue_share': 15.1, 'industry_tags': '["전력용콘덴서", "콘덴서"]'}
+{'filing_id': 34, 'application': '전장용', 'product': 'DC-LINK', 'revenue_share': 19.5, 'industry_tags': '["전장용콘덴서", "콘덴서"]'}
+{'filing_id': 34, 'application': '전기, 전자부품', 'product': 'DCC', 'revenue_share': 8.3, 'industry_tags': '["단층세라믹콘덴서", "콘덴서"]'}
+{'filing_id': 34, 'application': '전기, 전자부품', 'product': 'CI', 'revenue_share': 1.3, 'industry_tags': '["콘덴서"]'}
+{'filing_id': 34, 'application': '전기, 전자부품', 'product': '기타', 'revenue_share': 9.7, 'industry_tags': '["콘덴서"]'}
+{'filing_id': 32, 'application': '스마트폰, 태블릿, 디스플레이, 가전, 산업용', 'product': '칩 바리스터, MLCC, EMI Filter, CMF', 'revenue_share': None, 'industry_tags': '["ESD 대책", "전자파 방지", "정전기 방지"]'}
+{'filing_id': 32, 'application': '스마트폰, 차량, IT기기, 전장부품', 'product': 'Bluetooth 안테나, GPS 안테나, NFC+MST+WPC 콤보 안테나', 'revenue_share': None, 'industry_tags': '["무선통신", "NFC", "MST", "무선충전"]'}
+{'filing_id': 32, 'application': '자동차, 가전', 'product': 'DDM, DD 모터, 인카센서, 쿨링팬 모터', 'revenue_share': None, 'industry_tags': '["자동차 전장", "LED 헤드라이트", "공조장치", "배터리 쿨링", "구동동력"]'}
+
+=== ANALYSIS RESULTS ===
+filing_id=34
+  competitors(0): []
+  regulations(0): []
+  threats(0):
+  market_data(0):
+filing_id=34
+  competitors(0): []
+  regulations(2): [{'name': '자본시장과 금융투자업에 관한 법률 제124조', 'effective_date': '2009년 2월 4일', 'impact': '증권신고의 효력이 발생한 증권을 취득하고자 하는 자(전문투자자 제외)에게 적합한 투자설명서를 미리 교부하지 아니하면 그 증권을 취득하게 하거나 매도하여서는 안됨'}, {'name': '자본시장과 금융투자업에 관한 법률 시행령 제132조', 'effective_date': '', 'impact': '투자설명서를 받기를 거부한다는 의사를 서면으로 표시한 자는 투자설명서의 교부없이 청약이 가능'}]
+  threats(9):
+    - {'factor': '국내외 거시경제 침체 및 불확실성', 'description': '글로벌 성장세 둔화, 고금리, 고환율, 저성장 등으로 인해 당사가 영위하는 산업에 대한 투자가 위축되거나 실적이 악화될 수 있음', 'data': ''}
+    - {'factor': '국내 건설투자 부진', 'description': '부동산 경기 둔화 및 건설 경기 부진의 영향으로 단기적으로 위축될 것으로 전망', 'data': '2024년 (-)3.3%, 2025년 (-)9.9%, 한국은행 경제전망보고서(2026.02)'}
+    - {'factor': '글로벌 통상환경 불확실성', 'description': '주요국 관세 정책 변화, 무역 장벽 강화, 공급망 재편 등으로 인한 불확실성', 'data': 'IMF, OECD 경제전망 보고서'}
+    - {'factor': '지정학적 리스크', 'description': '중동 분쟁 심화에 따른 에너지 가격 상승, 공급망 불안, 물가 부담 확대', 'data': 'OECD Economic Outlook Report (2026.3)'}
+    - {'factor': '전기차 시장의 지역적 불균형', 'description': '글로벌 전기차 판매의 65% 이상이 중국에서 발생하고 있으며, 유럽의 경우 보조금 축소와 경기 둔화로 전기차 판매량이 감소', 'data': 'IEA 자료'}
+    - {'factor': '배터리 및 자율주행 기술 빠른 진화', 'description': '배터리 기술, 자율주행 기술, 전자제어 등의 핵심기술이 빠르게 진화하는 만큼 당사의 제품이 기술 트렌드 변화에 적응하지 못할 위험 존재', 'data': ''}
+    - {'factor': '완성차 업체의 핵심 부품 내재화', 'description': '주요 완성차 업체들의 핵심 부품 내재화 추세가 강화되면서 외부 공급업체의 역할이 축소될 가능성', 'data': ''}
+    - {'factor': '국내 자동차 생산 감소', 'description': '국내 자동차 생산이 감소세를 보이고 있음', 'data': '2024년 4,130천대(-2.7%), 2025년(추정) 4,080천대(-1.2%), 한국자동차모빌리티산업협회(KAMA), 한국자동차연구원(KATECH)'}
+    - {'factor': '국내 자동차 내수판매 감소', 'description': '국내 자동차 내수판매가 감소세를 보이고 있음', 'data': '2024년 1,636천대(-6.5%), 2025년(추정) 1,677천대(2.5%), 한국자동차모빌리티산업협회(KAMA), 한국자동차연구원(KATECH)'}
+  market_data(25):
+    - {'metric': '국내 GDP', 'value': '2024년 2.0%, 2025년 1.0%, 2026년(E) 2.0%, 2027년(E) 1.8%', 'source': '한국은행 경제전망보고서', 'year': '2026.02'}
+    - {'metric': '국내 민간소비', 'value': '2024년 1.1%, 2025년 1.3%, 2026년 1.8%, 2027년 1.8%', 'source': '한국은행 경제전망보고서', 'year': '2026.02'}
+    - {'metric': '국내 건설투자', 'value': '2024년 (-)3.3%, 2025년 (-)9.9%, 2026년 1.0%, 2027년 1.5%', 'source': '한국은행 경제전망보고서', 'year': '2026.02'}
+    - {'metric': '국내 설비투자', 'value': '2024년 1.7%, 2025년 2.0%, 2026년 2.4%, 2027년 2.0%', 'source': '한국은행 경제전망보고서', 'year': '2026.02'}
+    - {'metric': '국내 지식재산생산물 투자', 'value': '2024년 1.2%, 2025년 2.9%, 2026년 3.5%, 2027년 2.6%', 'source': '한국은행 경제전망보고서', 'year': '2026.02'}
+    - {'metric': '국내 재화수출', 'value': '2024년 6.4%, 2025년 3.1%, 2026년 2.1%, 2027년 2.3%', 'source': '한국은행 경제전망보고서', 'year': '2026.02'}
+    - {'metric': '국내 재화수입', 'value': '2024년 1.3%, 2025년 2.1%, 2026년 2.5%, 2027년 2.6%', 'source': '한국은행 경제전망보고서', 'year': '2026.02'}
+    - {'metric': '세계 경제성장률', 'value': '2025년 3.4%, 2026년(E) 3.1%, 2027년(E) 3.2%', 'source': 'IMF World Economic Outlook', 'year': '2026.04'}
+    - {'metric': '미국 경제성장률', 'value': '2025년 2.1%, 2026년(E) 2.3%, 2027년(E) 2.1%', 'source': 'IMF World Economic Outlook', 'year': '2026.04'}
+    - {'metric': '유로존 경제성장률', 'value': '2025년 1.4%, 2026년(E) 1.1%, 2027년(E) 1.2%', 'source': 'IMF World Economic Outlook', 'year': '2026.04'}
+    - {'metric': '일본 경제성장률', 'value': '2025년 1.2%, 2026년(E) 0.7%, 2027년(E) 0.6%', 'source': 'IMF World Economic Outlook', 'year': '2026.04'}
+    - {'metric': '한국 경제성장률(IMF)', 'value': '2025년 1.0%, 2026년(E) 1.9%, 2027년(E) 2.1%', 'source': 'IMF World Economic Outlook', 'year': '2026.04'}
+    - {'metric': '중국 경제성장률', 'value': '2025년 5.0%, 2026년(E) 4.4%, 2027년(E) 4.0%', 'source': 'IMF World Economic Outlook', 'year': '2026.04'}
+    - {'metric': '인도 경제성장률', 'value': '2025년 7.6%, 2026년(E) 6.5%, 2027년(E) 6.4%', 'source': 'IMF World Economic Outlook', 'year': '2026.04'}
+    - {'metric': 'OECD 세계 경제성장률', 'value': '2025년 3.3%, 2026년(E) 2.9%, 2027년(E) 3.0%', 'source': 'OECD Economic Outlook, Report', 'year': '2026.03'}
+    - {'metric': 'OECD 미국 경제성장률', 'value': '2025년 2.1%, 2026년(E) 2.0%, 2027년(E) 1.7%', 'source': 'OECD Economic Outlook, Report', 'year': '2026.03'}
+    - {'metric': 'OECD 유로존 경제성장률', 'value': '2025년 1.4%, 2026년(E) 0.8%, 2027년(E) 1.2%', 'source': 'OECD Economic Outlook, Report', 'year': '2026.03'}
+    - {'metric': 'OECD 한국 경제성장률', 'value': '2025년 0.9%, 2026년(E) 1.7%, 2027년(E) 2.1%', 'source': 'OECD Economic Outlook, Report', 'year': '2026.03'}
+    - {'metric': 'OECD G20 물가상승률', 'value': '2026년 4.0%, 2027년 2.7%', 'source': 'OECD Economic Outlook, Report', 'year': '2026.03'}
+    - {'metric': '한국 소비자물가상승률', 'value': '2026년 2.7%, 2027년 2.0%', 'source': 'OECD Economic Outlook, Report', 'year': '2026.03'}
+    - {'metric': '글로벌 전기차 판매 비중', 'value': '2019년 2.5%, 2024년 20%, 2030년 40% 초과', 'source': 'International Energy Agency (IEA)', 'year': ''}
+    - {'metric': '글로벌 전기차 판매량 전망', 'value': '2025년 2,000만대 이상', 'source': 'International Energy Agency (IEA)', 'year': ''}
+    - {'metric': '국내 자동차 생산', 'value': '2024년 4,130천대(-2.7%), 2025년(E) 4,080천대(-1.2%), 2026년(F) 4,130천대(1.2%)', 'source': '한국자동차모빌리티산업협회(KAMA), 한국자동차연구원(KATECH)', 'year': ''}
+    - {'metric': '국내 자동차 내수판매', 'value': '2024년 1,636천대(-6.5%), 2025년(E) 1,677천대(2.5%), 2026년(F) 1,690천대(0.8%)', 'source': '한국자동차모빌리티산업협회(KAMA), 한국자동차연구원(KATECH)', 'year': ''}
+    - {'metric': '국내 자동차 수출', 'value': '2024년 2,784천대(0.6%), 2025년(E) 2,720천대(-2.3%), 2026년(F) 2,750천대(1.1%)', 'source': '한국자동차모빌리티산업협회(KAMA), 한국자동차연구원(KATECH)', 'year': ''}
+filing_id=34
+  competitors(0): []
+  regulations(0): []
+  threats(0):
+  market_data(0):
+filing_id=34
+  competitors(0): []
+  regulations(1): [{'name': '자본시장과 금융투자업에 관한 법률 제124조', 'effective_date': '2009년 2월 4일', 'impact': '증권신고의 효력이 발생한 증권을 취득하고자 하는 자(전문투자자 제외)에게 적합한 투자설명서를 미리 교부하지 아니하면 그 증권을 취득하게 하거나 매도할 수 없음'}]
+  threats(12):
+    - {'factor': '국내외 거시경제 침체 및 불확실성', 'description': '글로벌 성장세 둔화, 지정학적 리스크, 환율 및 금리변동 등으로 인한 국내외 경기 침체 심화 가능성', 'data': '한국은행 경제전망보고서(2026.02): 국내 GDP 2024년 2.0%, 2025년 1.0%, 2026년 2.0%, 2027년 1.8%'}
+    - {'factor': '건설투자 부진', 'description': '부동산 경기 둔화 및 건설 경기 부진의 지속', 'data': '한국은행 경제전망보고서(2026.02): 건설투자 증가율 2024년 (-)3.3%, 2025년 (-)9.9%, 2026년 1.0%, 2027년 1.5%'}
+    - {'factor': '글로벌 통상환경 불확실성', 'description': '주요국 관세 정책 변화 및 통상 갈등 심화', 'data': 'IMF World Economic Outlook (2026.04): 세계 경제성장률 2025년 3.4%, 2026년 3.1%, 2027년 3.2%'}
+    - {'factor': '유로존 회복 지연', 'description': '유럽 경제의 약한 회복 흐름', 'data': 'IMF World Economic Outlook (2026.04): 유로존 성장률 2025년 1.4%, 2026년 1.1%, 2027년 1.2%'}
+    - {'factor': '중국 성장세 둔화', 'description': '중국 경제의 성장률 하락', 'data': 'IMF World Economic Outlook (2026.04): 중국 성장률 2025년 5.0%, 2026년 4.4%, 2027년 4.0%'}
+    - {'factor': '전기차 시장의 지역별 불균형', 'description': '글로벌 전기차 판매의 65% 이상이 중국에서 발생하고 있으며, 유럽의 보조금 축소로 인한 판매량 감소', 'data': 'International Energy Agency (IEA): 2025년 글로벌 전기차 판매량 2,000만대 이상, 2030년 전기차 판매 비중 40% 초과 전망'}
+    - {'factor': '배터리·자율주행 등 핵심기술의 빠른 진화', 'description': '당사 제품이 기술 트렌드 변화에 적응하지 못할 위험', 'data': '기술 트렌드 변화의 가속화로 인한 제품 경쟁력 저하 위험'}
+    - {'factor': '완성차 업체의 핵심 부품 내재화 추세', 'description': '주요 완성차 업체들의 핵심 부품 자체 개발로 외부 공급업체의 역할 축소', 'data': '외부 공급업체의 역할 축소 및 경쟁 심화 예상'}
+    - {'factor': '국내 자동차 생산 부진', 'description': '국내 자동차 생산량의 감소 추세', 'data': '한국자동차모빌리티산업협회, 한국자동차연구원: 국내 자동차 생산 2024년 4,130천대, 2025년(추정) 4,080천대(-1.2%), 2026년(전망) 4,130천대(1.2%)'}
+    - {'factor': '중동 분쟁으로 인한 에너지 가격 상승', 'description': '에너지 가격 상승, 공급망 불안, 물가 부담 확대', 'data': 'OECD Economic Outlook (2026.3): 중동 에너지 수입 비중이 높은 국가의 생산활동과 경제 전반에 부담 가중 가능성'}
+    - {'factor': '물가 상승', 'description': '원재료 조달비용, 에너지 비용, 운송비용 및 금융비용 등의 증가', 'data': 'OECD Economic Outlook (2026.3): G20 물가상승률 2026년 4.0%, 2027년 2.7%, 한국 소비자물가상승률 2026년 2.7%, 2027년 2.0%'}
+    - {'factor': '고금리 및 고환율', 'description': '글로벌 경기침체로 인한 산업 투자 위축', 'data': '고금리, 고환율, 저성장 등의 글로벌 경기침체 진행 중'}
+  market_data(25):
+    - {'metric': '국내 GDP 성장률', 'value': '2.0%~1.8%', 'source': '한국은행 경제전망보고서', 'year': '2027년(E)'}
+    - {'metric': '민간소비 증가율', 'value': '1.1%~1.8%', 'source': '한국은행 경제전망보고서', 'year': '2027년(E)'}
+    - {'metric': '건설투자 증가율', 'value': '(-)3.3%~1.5%', 'source': '한국은행 경제전망보고서', 'year': '2027년(E)'}
+    - {'metric': '설비투자 증가율', 'value': '1.7%~2.4%', 'source': '한국은행 경제전망보고서', 'year': '2027년(E)'}
+    - {'metric': '지식재산생산물 투자 증가율', 'value': '1.2%~2.6%', 'source': '한국은행 경제전망보고서', 'year': '2027년(E)'}
+    - {'metric': '재화수출 증가율', 'value': '6.4%~2.3%', 'source': '한국은행 경제전망보고서', 'year': '2027년(E)'}
+    - {'metric': '재화수입 증가율', 'value': '2.1%~2.6%', 'source': '한국은행 경제전망보고서', 'year': '2027년(E)'}
+    - {'metric': '세계 경제성장률', 'value': '3.4%~3.0%', 'source': 'OECD Economic Outlook', 'year': '2027년(E)'}
+    - {'metric': '미국 경제성장률', 'value': '2.1%~1.7%', 'source': 'OECD Economic Outlook', 'year': '2027년(E)'}
+    - {'metric': '유로존 경제성장률', 'value': '1.4%~0.8%', 'source': 'OECD Economic Outlook', 'year': '2027년(E)'}
+    - {'metric': '일본 경제성장률', 'value': '1.2%~0.9%', 'source': 'OECD Economic Outlook', 'year': '2027년(E)'}
+    - {'metric': '영국 경제성장률', 'value': '1.3%~0.8%', 'source': 'IMF World Economic Outlook', 'year': '2027년(E)'}
+    - {'metric': '캐나다 경제성장률', 'value': '1.7%~1.9%', 'source': 'IMF World Economic Outlook', 'year': '2027년(E)'}
+    - {'metric': '한국 경제성장률', 'value': '1.0%~1.7%', 'source': 'OECD Economic Outlook', 'year': '2027년(E)'}
+    - {'metric': '중국 경제성장률', 'value': '5.0%~4.3%', 'source': 'OECD Economic Outlook', 'year': '2027년(E)'}
+    - {'metric': '인도 경제성장률', 'value': '7.6%~6.1%', 'source': 'OECD Economic Outlook', 'year': '2027년(E)'}
+    - {'metric': 'G20 물가상승률', 'value': '4.0%~2.7%', 'source': 'OECD Economic Outlook', 'year': '2027년(E)'}
+    - {'metric': '한국 소비자물가상승률', 'value': '2.7%~2.0%', 'source': 'OECD Economic Outlook', 'year': '2027년(E)'}
+    - {'metric': '국내 자동차 생산량', 'value': '4,130~4,080', 'source': '한국자동차모빌리티산업협회, 한국자동차연구원', 'year': '2026년(F)'}
+    - {'metric': '국내 자동차 생산 전년대비', 'value': '-2.7%~1.2%', 'source': '한국자동차모빌리티산업협회, 한국자동차연구원', 'year': '2026년(F)'}
+    - {'metric': '국내 자동차 내수판매', 'value': '1,636~1,690', 'source': '한국자동차모빌리티산업협회, 한국자동차연구원', 'year': '2026년(F)'}
+    - {'metric': '국내 자동차 내수판매 전년대비', 'value': '-6.5%~0.8%', 'source': '한국자동차모빌리티산업협회, 한국자동차연구원', 'year': '2026년(F)'}
+    - {'metric': '국내 자동차 수출량', 'value': '2,784~2,750', 'source': '한국자동차모빌리티산업협회, 한국자동차연구원', 'year': '2026년(F)'}
+    - {'metric': '국내 자동차 수출 전년대비', 'value': '0.6%~1.1%', 'source': '한국자동차모빌리티산업협회, 한국자동차연구원', 'year': '2026년(F)'}
+    - {'metric': '글로벌 전기차 판매 비중', 'value': '2.5%~20%', 'source': 'International Energy Agency (IEA)', 'year': '2024년'}
+filing_id=34
+  competitors(0): []
+  regulations(1): [{'name': '자본시장과 금융투자업에 관한 법률 제124조', 'effective_date': '2009년 2월 4일', 'impact': '증권신고의 효력이 발생한 증권을 취득하고자 하는 자(전문투자자 제외)에게 적합한 투자설명서를 미리 교부하지 아니하면 그 증권을 취득하게 하거나 매도할 수 없음'}]
+  threats(10):
+    - {'factor': '국내외 거시경제 침체 및 불확실성', 'description': '고금리, 고환율, 저성장 등에 따른 글로벌 경기침체로 인해 산업에 대한 투자가 위축되거나 실적이 악화될 수 있음', 'data': '2025년 GDP 1.0%, 2026년 GDP 2.0% (한국은행 경제전망보고서, 2026.02)'}
+    - {'factor': '세계 경제 성장률 둔화', 'description': '주요국 통상 갈등 심화, 공급망 재편, 지정학적 긴장 고조 등으로 인한 성장 둔화', 'data': '2025년 세계경제성장률 3.4%, 2026년 3.1%, 2027년 3.2% (IMF World Economic Outlook, 2026.04)'}
+    - {'factor': '유로존 경제 회복 지연', 'description': '에너지 가격 상승 등의 영향으로 성장률 둔화', 'data': '2026년 유로존 성장률 1.1% (IMF, 2026.04) / 0.8% (OECD, 2026.03)'}
+    - {'factor': '중국 성장세 둔화', 'description': '중국 경제 성장 둔화로 인한 글로벌 경제 하방 압력', 'data': '2025년 중국 성장률 5.0%, 2026년 4.4%, 2027년 4.0% (IMF, 2026.04)'}
+    - {'factor': '건설투자 부진', 'description': '부동산 경기 둔화 및 건설 경기 부진의 영향', 'data': '2024년 건설투자 -3.3%, 2025년 -9.9%, 2026년 1.0% (한국은행 경제전망보고서, 2026.02)'}
+    - {'factor': '지정학적 리스크', 'description': '중동 분쟁 심화에 따른 에너지 가격 상승, 공급망 불안, 물가 부담 확대', 'data': '한국은 중동 에너지 수입 비중이 높아 전쟁 장기화 시 생산활동과 경제 전반에 부담 가중 (OECD, 2026.03)'}
+    - {'factor': '전기차 시장 불확실성', 'description': '중국에 과도하게 집중된 전기차 시장, 유럽의 보조금 축소와 경기 둔화로 전기차 판매량 감소', 'data': '글로벌 전기차 판매의 65% 이상이 중국에서 발생'}
+    - {'factor': '배터리·자율주행 기술 급속 진화', 'description': '당사의 제품이 기술 트렌드 변화에 적응하지 못할 위험', 'data': '배터리 기술, 자율주행 기술, 전자제어 등의 핵심기술이 빠르게 진화 중'}
+    - {'factor': '완성차 업체의 핵심 부품 내재화', 'description': '주요 완성차 업체들의 핵심 부품 내재화 추세 강화로 외부 공급업체 역할 축소', 'data': '주요 완성차 업체들의 핵심 부품 내재화 추세 강화'}
+    - {'factor': '자동차 시장 성장 둔화', 'description': '국내 자동차 생산 및 판매 감소', 'data': '2024년 자동차 생산 4,130천대(-2.7%), 내수판매 1,636천대(-6.5%), 수출 2,784천대(0.6%) / 2025년 추정 생산 4,080천대(-1.2%), 내수판매 1,677천대(2.5%), 수출 2,720천대(-2.3%) (한국자동차모빌리티산업협회, 한국자동차연구원)'}
+  market_data(29):
+    - {'metric': '국내 GDP', 'value': '2024년 2.0%, 2025년 1.0%, 2026년 2.0%, 2027년 1.8%', 'source': '한국은행 경제전망보고서', 'year': '2026.02'}
+    - {'metric': '국내 민간소비', 'value': '2024년 1.1%, 2025년 1.3%, 2026년 1.8%, 2027년 1.8%', 'source': '한국은행 경제전망보고서', 'year': '2026.02'}
+    - {'metric': '국내 건설투자', 'value': '2024년 -3.3%, 2025년 -9.9%, 2026년 1.0%, 2027년 1.5%', 'source': '한국은행 경제전망보고서', 'year': '2026.02'}
+    - {'metric': '국내 설비투자', 'value': '2024년 1.7%, 2025년 2.0%, 2026년 2.4%, 2027년 2.0%', 'source': '한국은행 경제전망보고서', 'year': '2026.02'}
+    - {'metric': '국내 지식재산생산물 투자', 'value': '2024년 1.2%, 2025년 2.9%, 2026년 3.5%, 2027년 2.6%', 'source': '한국은행 경제전망보고서', 'year': '2026.02'}
+    - {'metric': '국내 재화수출', 'value': '2024년 6.4%, 2025년 3.1%, 2026년 2.1%, 2027년 2.3%', 'source': '한국은행 경제전망보고서', 'year': '2026.02'}
+    - {'metric': '국내 재화수입', 'value': '2024년 1.3%, 2025년 2.1%, 2026년 2.5%, 2027년 2.6%', 'source': '한국은행 경제전망보고서', 'year': '2026.02'}
+    - {'metric': '세계 경제성장률', 'value': '2025년 3.4%, 2026년 3.1%, 2027년 3.2%', 'source': 'IMF World Economic Outlook', 'year': '2026.04'}
+    - {'metric': '미국 경제성장률', 'value': '2025년 2.1%, 2026년 2.3%, 2027년 2.1%', 'source': 'IMF World Economic Outlook', 'year': '2026.04'}
+    - {'metric': '유로존 경제성장률', 'value': '2025년 1.4%, 2026년 1.1%, 2027년 1.2%', 'source': 'IMF World Economic Outlook', 'year': '2026.04'}
+    - {'metric': '일본 경제성장률', 'value': '2025년 1.2%, 2026년 0.7%, 2027년 0.6%', 'source': 'IMF World Economic Outlook', 'year': '2026.04'}
+    - {'metric': '한국 경제성장률(IMF)', 'value': '2025년 1.0%, 2026년 1.9%, 2027년 2.1%', 'source': 'IMF World Economic Outlook', 'year': '2026.04'}
+    - {'metric': '중국 경제성장률', 'value': '2025년 5.0%, 2026년 4.4%, 2027년 4.0%', 'source': 'IMF World Economic Outlook', 'year': '2026.04'}
+    - {'metric': '인도 경제성장률', 'value': '2025년 7.6%, 2026년 6.5%, 2027년 6.4%', 'source': 'IMF World Economic Outlook', 'year': '2026.04'}
+    - {'metric': '세계 경제성장률(OECD)', 'value': '2025년 3.3%, 2026년 2.9%, 2027년 3.0%', 'source': 'OECD Economic Outlook, Report', 'year': '2026.03'}
+    - {'metric': '미국 경제성장률(OECD)', 'value': '2025년 2.1%, 2026년 2.0%, 2027년 1.7%', 'source': 'OECD Economic Outlook, Report', 'year': '2026.03'}
+    - {'metric': '유로존 경제성장률(OECD)', 'value': '2025년 1.4%, 2026년 0.8%, 2027년 1.2%', 'source': 'OECD Economic Outlook, Report', 'year': '2026.03'}
+    - {'metric': '일본 경제성장률(OECD)', 'value': '2025년 1.2%, 2026년 0.9%, 2027년 0.9%', 'source': 'OECD Economic Outlook, Report', 'year': '2026.03'}
+    - {'metric': '한국 경제성장률(OECD)', 'value': '2025년 0.9%, 2026년 1.7%, 2027년 2.1%', 'source': 'OECD Economic Outlook, Report', 'year': '2026.03'}
+    - {'metric': '중국 경제성장률(OECD)', 'value': '2025년 5.0%, 2026년 4.4%, 2027년 4.3%', 'source': 'OECD Economic Outlook, Report', 'year': '2026.03'}
+    - {'metric': '인도 경제성장률(OECD)', 'value': '2025년 7.6%, 2026년 6.1%, 2027년 6.4%', 'source': 'OECD Economic Outlook, Report', 'year': '2026.03'}
+    - {'metric': 'OECD G20 물가상승률', 'value': '2026년 4.0%, 2027년 2.7%', 'source': 'OECD Economic Outlook, Report', 'year': '2026.03'}
+    - {'metric': '한국 소비자물가상승률', 'value': '2026년 2.7%, 2027년 2.0%', 'source': 'OECD Economic Outlook, Report', 'year': '2026.03'}
+    - {'metric': '국내 자동차 생산', 'value': '2024년 4,130천대, 2025년 4,080천대(추정), 2026년 4,130천대(전망)', 'source': '한국자동차모빌리티산업협회(KAMA), 한국자동차연구원(KATECH)', 'year': ''}
+    - {'metric': '국내 자동차 내수판매', 'value': '2024년 1,636천대, 2025년 1,677천대(추정), 2026년 1,690천대(전망)', 'source': '한국자동차모빌리티산업협회(KAMA), 한국자동차연구원(KATECH)', 'year': ''}
+    - {'metric': '국내 자동차 수출', 'value': '2024년 2,784천대, 2025년 2,720천대(추정), 2026년 2,750천대(전망)', 'source': '한국자동차모빌리티산업협회(KAMA), 한국자동차연구원(KATECH)', 'year': ''}
+    - {'metric': '글로벌 전기차 시장 비중', 'value': '2019년 2.5%, 2024년 20%, 2030년 40% 초과 전망', 'source': 'International Energy Agency (IEA)', 'year': ''}
+    - {'metric': '글로벌 전기차 판매량', 'value': '2025년 2,000만대 이상 전망', 'source': 'International Energy Agency (IEA)', 'year': ''}
+    - {'metric': '글로벌 전기차 판매 지역 집중도', 'value': '65% 이상이 중국에서 발생', 'source': '텍스트 기반', 'year': ''}
+filing_id=34
+  competitors(0): []
+  regulations(2): [{'name': '자본시장과 금융투자업에 관한 법률 제124조', 'effective_date': '2009년 2월 4일', 'impact': '증권신고의 효력이 발생한 증권을 취득하고자 하는 자에게 적합한 투자설명서를 미리 교부하지 아니하면 그 증권을 취득하게 하거나 매도할 수 없음'}, {'name': '자본시장과 금융투자업에 관한 법률 시행령 제132조', 'effective_date': '2009년 2월 4일', 'impact': '투자설명서를 받기를 거부한다는 의사를 서면으로 표시한 자는 투자설명서의 교부없이 청약 가능'}]
+  threats(7):
+    - {'factor': '국내외 거시경제 침체 및 불확실성', 'description': '글로벌 성장세가 둔화될 경우 세라믹 칩, 안테나, BLDC 모터 등을 제조·판매하는 당사 사업 전반에 부정적 영향 가능', 'data': '2025년 GDP 1.0%, 2026년 2.0%, 2027년 1.8% (한국은행 경제전망보고서, 2026.02)'}
+    - {'factor': '고금리, 고환율, 저성장에 따른 글로벌 경기침체', 'description': '당사가 영위하는 산업에 대한 투자 위축 및 실적 악화 가능성', 'data': '세계 경제성장률 3.4%(2025년), 3.1%(2026년), 3.2%(2027년) (IMF World Economic Outlook, 2026.04)'}
+    - {'factor': '전방산업 자동차 시장의 불확실성', 'description': '경기 민감도가 높은 자동차 시장의 침체 시 주요 고객사의 생산조정 또는 발주 지연 등의 리스크', 'data': '국내 자동차 생산 2024년 4,130천대, 2025년 4,080천대(추정), 2026년 4,130천대(전망) (한국자동차모빌리티산업협회, 한국자동차연구원)'}
+    - {'factor': '전기차 시장 관련 기술 트렌드 변화', 'description': '배터리 기술, 자율주행 기술, 전자제어 등 핵심기술이 빠르게 진화하면서 당사 제품이 기술 트렌드 변화에 적응하지 못할 위험', 'data': '글로벌 전기차 판매비중 2019년 2.5%, 2024년 20%, 2030년 40% 초과 예상 (International Energy Agency, IEA)'}
+    - {'factor': '주요 완성차 업체의 핵심 부품 내재화 추세', 'description': '주요 완성차 업체들의 핵심 부품 내재화 추세 강화로 외부 공급업체의 역할 축소 가능성', 'data': '글로벌 전기차 판매의 65% 이상이 중국에서 발생'}
+    - {'factor': '지정학적 리스크 및 통상환경 불확실성', 'description': '주요국 관세 정책 변화, 무역 장벽 강화, 공급망 재편으로 인한 경기 변동성 확대', 'data': 'IMF가 주요국 통상 갈등 심화, 공급망 재편, 지정학적 긴장 고조를 세계 경제의 주요 하방 리스크로 제시 (IMF World Economic Outlook, 2026.04)'}
+    - {'factor': '중동 분쟁에 따른 에너지 비용 상승', 'description': '에너지 가격 상승, 공급망 불안, 물가 부담 확대로 인한 생산활동 및 경제 전반 부담 가중', 'data': 'OECD는 한국과 같이 중동 에너지 수입 비중이 높은 국가의 경우 전쟁 장기화 시 부담 가중 가능성 언급 (OECD Economic Outlook, 2026.3)'}
+  market_data(23):
+    - {'metric': 'GDP (국내)', 'value': '2.0~1.8', 'source': '한국은행 경제전망보고서', 'year': '2027'}
+    - {'metric': '민간소비', 'value': '1.1~1.8', 'source': '한국은행 경제전망보고서', 'year': '2026'}
+    - {'metric': '건설투자', 'value': '(-)3.3~1.0', 'source': '한국은행 경제전망보고서', 'year': '2026'}
+    - {'metric': '설비투자', 'value': '1.7~2.4', 'source': '한국은행 경제전망보고서', 'year': '2026'}
+    - {'metric': '지식재산생산물 투자', 'value': '1.2~3.5', 'source': '한국은행 경제전망보고서', 'year': '2026'}
+    - {'metric': '재화수출', 'value': '6.4~2.1', 'source': '한국은행 경제전망보고서', 'year': '2026'}
+    - {'metric': '세계 경제성장률', 'value': '3.4~3.2', 'source': 'IMF World Economic Outlook', 'year': '2027'}
+    - {'metric': '미국 경제성장률', 'value': '2.1~2.3', 'source': 'IMF World Economic Outlook', 'year': '2027'}
+    - {'metric': '유로존 경제성장률', 'value': '1.4~1.2', 'source': 'IMF World Economic Outlook', 'year': '2027'}
+    - {'metric': '한국 경제성장률', 'value': '1.0~2.1', 'source': 'IMF World Economic Outlook', 'year': '2027'}
+    - {'metric': 'OECD 세계 경제성장률', 'value': '3.3~3.0', 'source': 'OECD Economic Outlook', 'year': '2027'}
+    - {'metric': 'OECD 미국 경제성장률', 'value': '2.0', 'source': 'OECD Economic Outlook', 'year': '2026'}
+    - {'metric': 'OECD 유로존 경제성장률', 'value': '0.8', 'source': 'OECD Economic Outlook', 'year': '2026'}
+    - {'metric': 'OECD 한국 경제성장률', 'value': '0.9~2.1', 'source': 'OECD Economic Outlook', 'year': '2027'}
+    - {'metric': 'OECD 소비자물가상승률', 'value': '2.7', 'source': 'OECD Economic Outlook', 'year': '2027'}
+    - {'metric': '글로벌 전기차 판매비중', 'value': '2.5~20', 'source': 'International Energy Agency (IEA)', 'year': '2024'}
+    - {'metric': '글로벌 전기차 판매 비중 예상', 'value': '40 초과', 'source': 'International Energy Agency (IEA)', 'year': '2030'}
+    - {'metric': '국내 자동차 생산', 'value': '4,130~4,080', 'source': '한국자동차모빌리티산업협회(KAMA), 한국자동차연구원(KATECH)', 'year': '2026'}
+    - {'metric': '국내 자동차 생산 전년대비', 'value': '-2.7~1.2', 'source': '한국자동차모빌리티산업협회(KAMA), 한국자동차연구원(KATECH)', 'year': '2026'}
+    - {'metric': '국내 자동차 내수판매', 'value': '1,636~1,690', 'source': '한국자동차모빌리티산업협회(KAMA), 한국자동차연구원(KATECH)', 'year': '2026'}
+    - {'metric': '국내 자동차 내수판매 전년대비', 'value': '-6.5~0.8', 'source': '한국자동차모빌리티산업협회(KAMA), 한국자동차연구원(KATECH)', 'year': '2026'}
+    - {'metric': '국내 자동차 수출', 'value': '2,784~2,750', 'source': '한국자동차모빌리티산업협회(KAMA), 한국자동차연구원(KATECH)', 'year': '2026'}
+    - {'metric': '국내 자동차 수출 전년대비', 'value': '0.6~1.1', 'source': '한국자동차모빌리티산업협회(KAMA), 한국자동차연구원(KATECH)', 'year': '2026'}
+filing_id=34
+  competitors(0): []
+  regulations(1): [{'name': '자본시장과 금융투자업에 관한 법률', 'effective_date': '2009년 2월 4일', 'impact': '증권신고의 효력이 발생한 증권을 취득하고자 하는 자(전문투자자 제외)에게 투자설명서를 미리 교부하여야 함'}]
+  threats(8):
+    - {'factor': '국내외 거시경제 침체 및 불확실성', 'description': '세계 곳곳의 지정학적 리스크, 환율 및 금리변동 등의 불확실성으로 인해 국내외 경기 침체가 심화되거나 회복이 지연될 경우 당사의 매출 및 수익성에 부정적인 영향', 'data': ''}
+    - {'factor': '고금리, 고환율, 저성장', 'description': '글로벌 경기침체로 인해 당사가 영위하고 있는 산업에 대한 투자가 위축되거나 실적이 악화될 수 있음', 'data': ''}
+    - {'factor': '전기차 시장 불확실성', 'description': '글로벌 전기차 판매의 65% 이상이 중국에서 발생하고 있으며 유럽의 경우 보조금 축소와 경기 둔화로 전기차 판매량이 감소', 'data': '글로벌 전기차(BEV 및 PHEV) 시장은 2019년 전체 신차 판매량의 2.5% 수준에서 2024년 기준 20% 수준, 출처: International Energy Agency (IEA)'}
+    - {'factor': '배터리·자율주행·전자제어 기술 진화', 'description': '핵심기술이 빠르게 진화하는 만큼 당사의 제품이 기술 트렌드 변화에 적응하지 못할 위험 존재', 'data': ''}
+    - {'factor': '완성차 업체의 핵심 부품 내재화', 'description': '주요 완성차 업체들의 핵심 부품 내재화 추세가 강화되면서 외부 공급업체의 역할이 축소될 가능성', 'data': ''}
+    - {'factor': '자동차 산업의 경기 민감도', 'description': '자동차는 대표적 내구재로 경기 민감도가 높으며, 침체 국면에서는 투자 위축과 고용 둔화로 가계의 선택적 지출이 빠르게 감소', 'data': ''}
+    - {'factor': '주요국 통상 갈등 심화', 'description': '주요국 통상 갈등 심화, 공급망 재편, 지정학적 긴장 고조 등이 세계 경제의 주요 하방 리스크', 'data': '출처: IMF World Economic Outlook (2026.04)'}
+    - {'factor': '중동 분쟁에 따른 에너지 가격 상승', 'description': '최근 중동 분쟁 심화에 따른 에너지 가격 상승, 공급망 불안, 물가 부담 확대로 중동 에너지 수입 비중이 높은 국가에 부담', 'data': '출처: OECD Economic Outlook (2026.3)'}
+  market_data(32):
+    - {'metric': '국내 GDP 성장률', 'value': '2.0%~1.8%', 'source': '한국은행 경제전망보고서', 'year': '2027(E)'}
+    - {'metric': '국내 민간소비 증가율', 'value': '1.1%~1.8%', 'source': '한국은행 경제전망보고서', 'year': '2027(E)'}
+    - {'metric': '국내 건설투자 증가율', 'value': '(-)3.3%~1.5%', 'source': '한국은행 경제전망보고서', 'year': '2027(E)'}
+    - {'metric': '국내 설비투자 증가율', 'value': '1.7%~2.4%', 'source': '한국은행 경제전망보고서', 'year': '2027(E)'}
+    - {'metric': '국내 지식재산생산물 투자 증가율', 'value': '1.2%~2.6%', 'source': '한국은행 경제전망보고서', 'year': '2027(E)'}
+    - {'metric': '국내 재화수출 증가율', 'value': '6.4%~2.3%', 'source': '한국은행 경제전망보고서', 'year': '2027(E)'}
+    - {'metric': '국내 재화수입 증가율', 'value': '1.3%~2.6%', 'source': '한국은행 경제전망보고서', 'year': '2027(E)'}
+    - {'metric': '세계 경제성장률', 'value': '3.4%~3.2%', 'source': 'IMF World Economic Outlook', 'year': '2027(E)'}
+    - {'metric': '미국 경제성장률', 'value': '2.1%~2.3%', 'source': 'IMF World Economic Outlook', 'year': '2027(E)'}
+    - {'metric': '유로존 경제성장률', 'value': '1.4%~1.2%', 'source': 'IMF World Economic Outlook', 'year': '2027(E)'}
+    - {'metric': '일본 경제성장률', 'value': '1.2%~0.6%', 'source': 'IMF World Economic Outlook', 'year': '2027(E)'}
+    - {'metric': '한국 경제성장률', 'value': '1.0%~2.1%', 'source': 'IMF World Economic Outlook', 'year': '2027(E)'}
+    - {'metric': '중국 경제성장률', 'value': '5.0%~4.0%', 'source': 'IMF World Economic Outlook', 'year': '2027(E)'}
+    - {'metric': '인도 경제성장률', 'value': '7.6%~6.4%', 'source': 'IMF World Economic Outlook', 'year': '2027(E)'}
+    - {'metric': 'OECD 세계 경제성장률', 'value': '3.3%~3.0%', 'source': 'OECD Economic Outlook, Report', 'year': '2027(E)'}
+    - {'metric': 'OECD 미국 경제성장률', 'value': '2.1%~1.7%', 'source': 'OECD Economic Outlook, Report', 'year': '2027(E)'}
+    - {'metric': 'OECD 유로존 경제성장률', 'value': '1.4%~1.2%', 'source': 'OECD Economic Outlook, Report', 'year': '2027(E)'}
+    - {'metric': 'OECD 일본 경제성장률', 'value': '1.2%~0.9%', 'source': 'OECD Economic Outlook, Report', 'year': '2027(E)'}
+    - {'metric': 'OECD 한국 경제성장률', 'value': '0.9%~2.1%', 'source': 'OECD Economic Outlook, Report', 'year': '2027(E)'}
+    - {'metric': 'OECD 중국 경제성장률', 'value': '5.0%~4.3%', 'source': 'OECD Economic Outlook, Report', 'year': '2027(E)'}
+    - {'metric': 'OECD 인도 경제성장률', 'value': '7.6%~6.4%', 'source': 'OECD Economic Outlook, Report', 'year': '2027(E)'}
+    - {'metric': 'OECD G20 물가상승률', 'value': '4.0%~2.7%', 'source': 'OECD Economic Outlook, Report', 'year': '2027(E)'}
+    - {'metric': '한국 소비자물가상승률', 'value': '2.7%~2.0%', 'source': 'OECD Economic Outlook, Report', 'year': '2027(E)'}
+    - {'metric': '글로벌 전기차 시장 비중', 'value': '2.5%~20%', 'source': 'International Energy Agency (IEA)', 'year': '2024'}
+    - {'metric': '글로벌 전기차 판매량', 'value': '2,000만대 이상', 'source': 'International Energy Agency (IEA)', 'year': '2025(E)'}
+    - {'metric': '글로벌 전기차 판매 비중', 'value': '40% 이상', 'source': 'International Energy Agency (IEA)', 'year': '2030(E)'}
+    - {'metric': '국내 자동차 생산', 'value': '4,130천대~4,080천대', 'source': '한국자동차모빌리티산업협회(KAMA), 한국자동차연구원(KATECH)', 'year': '2024'}
+    - {'metric': '국내 자동차 생산 전년대비', 'value': '1.2%~(-)2.7%', 'source': '한국자동차모빌리티산업협회(KAMA), 한국자동차연구원(KATECH)', 'year': '2024'}
+    - {'metric': '국내 자동차 내수판매', 'value': '1,690천대~1,636천대', 'source': '한국자동차모빌리티산업협회(KAMA), 한국자동차연구원(KATECH)', 'year': '2024'}
+    - {'metric': '국내 자동차 내수판매 전년대비', 'value': '0.8%~(-)6.5%', 'source': '한국자동차모빌리티산업협회(KAMA), 한국자동차연구원(KATECH)', 'year': '2024'}
+    - {'metric': '국내 자동차 수출', 'value': '2,750천대~2,784천대', 'source': '한국자동차모빌리티산업협회(KAMA), 한국자동차연구원(KATECH)', 'year': '2024'}
+    - {'metric': '국내 자동차 수출 전년대비', 'value': '1.1%~0.6%', 'source': '한국자동차모빌리티산업협회(KAMA), 한국자동차연구원(KATECH)', 'year': '2024'}
+filing_id=34
+  competitors(0): []
+  regulations(1): [{'name': '자본시장과 금융투자업에 관한 법률 제124조', 'effective_date': '2009년 2월 4일', 'impact': '증권신고의 효력이 발생한 증권을 취득하고자 하는 자에게 적합한 투자설명서를 미리 교부하지 아니하면 그 증권을 취득하게 하거나 매도할 수 없음'}]
+  threats(12):
+    - {'factor': '국내외 거시경제 침체 및 불확실성', 'description': '세계 곳곳의 지정학적 리스크, 환율 및 금리변동 등의 불확실성으로 인해 국내외 경기 침체가 심화되거나 회복이 지연될 경우 당사의 매출 및 수익성에 부정적인 영향', 'data': '고금리, 고환율, 저성장 등에 따른 글로벌 경기침체'}
+    - {'factor': '국내 경제성장률 둔화', 'description': '한국은행 경제전망에 따른 국내 성장세 구조적 둔화 가능성', 'data': '2024년 2.0%, 2025년 1.0%, 2026년 2.0%, 2027년 1.8%'}
+    - {'factor': '건설투자 부진', 'description': '부동산 경기 둔화 및 건설 경기 부진으로 인한 영향', 'data': '2024년 (-)3.3%, 2025년 (-)9.9%, 2026년 1.0%, 2027년 1.5%'}
+    - {'factor': '글로벌 통상환경 불확실성', 'description': '주요국 관세 정책 변화 및 무역 장벽 강화로 인한 수출 증가율 둔화', 'data': '2024년 6.4%, 2025년 3.1%, 2026년 2.1%, 2027년 2.3%'}
+    - {'factor': '중동 분쟁 및 에너지 가격 변동성', 'description': '중동 분쟁 심화에 따른 에너지 가격 상승, 공급망 불안, 물가 부담 확대', 'data': 'OECD 지정학적 긴장 고조로 인한 하방 요인'}
+    - {'factor': '지정학적 리스크', 'description': '주요국 통상 갈등 심화, 공급망 재편, 지정학적 긴장 고조', 'data': 'IMF가 제시한 세계 경제의 주요 하방 리스크'}
+    - {'factor': '금융시장 변동성', 'description': '금융시장의 불안요인이 완전히 해소되지 않은 상황', 'data': '당사 재무 상황에 추가적인 위험요인으로 작용'}
+    - {'factor': '전기차 시장의 지역적 편중', 'description': '글로벌 전기차 판매의 65% 이상이 중국에서 발생, 유럽의 보조금 축소와 경기 둔화로 불확실성 지속', 'data': '중국 중심 65% 이상, 유럽은 판매량 감소'}
+    - {'factor': '전기차 핵심기술의 빠른 진화', 'description': '배터리 기술, 자율주행 기술, 전자제어 등의 핵심기술이 빠르게 진화하면서 당사 제품이 기술 트렌드 변화에 적응하지 못할 위험', 'data': '기술 트렌드 변화 적응 실패 위험'}
+    - {'factor': '완성차 업체의 핵심 부품 내재화', 'description': '주요 완성차 업체들의 핵심 부품 내재화 추세 강화로 외부 공급업체의 역할 축소 가능성', 'data': '외부 공급업체 역할 축소 위험'}
+    - {'factor': '자동차 산업의 경기 민감도', 'description': '자동차는 대표적 내구재로 경기 민감도가 높으며 침체 국면에서 수요가 크게 위축될 우려', 'data': '경기 둔화 시 가계의 선택적 지출 감소'}
+    - {'factor': '국내 자동차 산업 생산 감소', 'description': '국내 자동차 생산의 지속적 감소 추세', 'data': '2023년 4,244천대 → 2024년 4,130천대(-2.7%) → 2025년(E) 4,080천대(-1.2%)'}
+  market_data(29):
+    - {'metric': 'GDP', 'value': '2.0~1.8', 'source': '한국은행 경제전망보고서', 'year': '2027'}
+    - {'metric': '민간소비', 'value': '1.1~1.8', 'source': '한국은행 경제전망보고서', 'year': '2026'}
+    - {'metric': '건설투자', 'value': '(-)3.3~1.0', 'source': '한국은행 경제전망보고서', 'year': '2026'}
+    - {'metric': '설비투자', 'value': '1.7~2.4', 'source': '한국은행 경제전망보고서', 'year': '2026'}
+    - {'metric': '지식재산생산물 투자', 'value': '1.2~3.5', 'source': '한국은행 경제전망보고서', 'year': '2026'}
+    - {'metric': '재화수출', 'value': '6.4~2.1', 'source': '한국은행 경제전망보고서', 'year': '2026'}
+    - {'metric': '재화수입', 'value': '1.3~2.5', 'source': '한국은행 경제전망보고서', 'year': '2026'}
+    - {'metric': '세계 경제성장률', 'value': '3.4~3.2', 'source': 'IMF World Economic Outlook', 'year': '2027'}
+    - {'metric': '미국 경제성장률', 'value': '2.1~2.3', 'source': 'IMF World Economic Outlook', 'year': '2026'}
+    - {'metric': '유로존 경제성장률', 'value': '1.4~1.1', 'source': 'IMF World Economic Outlook', 'year': '2026'}
+    - {'metric': '일본 경제성장률', 'value': '1.2~0.7', 'source': 'IMF World Economic Outlook', 'year': '2026'}
+    - {'metric': '한국 경제성장률(IMF)', 'value': '1.0~1.9', 'source': 'IMF World Economic Outlook', 'year': '2026'}
+    - {'metric': '중국 경제성장률(IMF)', 'value': '5.0~4.4', 'source': 'IMF World Economic Outlook', 'year': '2026'}
+    - {'metric': '인도 경제성장률(IMF)', 'value': '7.6~6.5', 'source': 'IMF World Economic Outlook', 'year': '2026'}
+    - {'metric': '세계 경제성장률(OECD)', 'value': '3.3~2.9', 'source': 'OECD Economic Outlook Report', 'year': '2026'}
+    - {'metric': 'G20 경제성장률', 'value': '3.3~3.0', 'source': 'OECD Economic Outlook Report', 'year': '2026'}
+    - {'metric': '미국 경제성장률(OECD)', 'value': '2.1~2.0', 'source': 'OECD Economic Outlook Report', 'year': '2026'}
+    - {'metric': '유로존 경제성장률(OECD)', 'value': '1.4~0.8', 'source': 'OECD Economic Outlook Report', 'year': '2026'}
+    - {'metric': '일본 경제성장률(OECD)', 'value': '1.2~0.9', 'source': 'OECD Economic Outlook Report', 'year': '2026'}
+    - {'metric': '한국 경제성장률(OECD)', 'value': '0.9~1.7', 'source': 'OECD Economic Outlook Report', 'year': '2026'}
+    - {'metric': '중국 경제성장률(OECD)', 'value': '5.0~4.4', 'source': 'OECD Economic Outlook Report', 'year': '2026'}
+    - {'metric': '인도 경제성장률(OECD)', 'value': '7.6~6.1', 'source': 'OECD Economic Outlook Report', 'year': '2026'}
+    - {'metric': 'G20 물가상승률', 'value': '4.0~2.7', 'source': 'OECD', 'year': '2027'}
+    - {'metric': '한국 소비자물가상승률', 'value': '2.7~2.0', 'source': 'OECD', 'year': '2027'}
+    - {'metric': '글로벌 전기차 판매 비중', 'value': '2.5~40', 'source': 'International Energy Agency (IEA)', 'year': '2030'}
+    - {'metric': '글로벌 전기차 판매량', 'value': '2,000만대 이상', 'source': 'International Energy Agency (IEA)', 'year': '2025'}
+    - {'metric': '국내 자동차 생산', 'value': '4,244~4,080', 'source': '한국자동차모빌리티산업협회(KAMA), 한국자동차연구원(KATECH)', 'year': '2026'}
+    - {'metric': '국내 자동차 내수판매', 'value': '1,770~1,690', 'source': '한국자동차모빌리티산업협회(KAMA), 한국자동차연구원(KATECH)', 'year': '2026'}
+    - {'metric': '국내 자동차 수출', 'value': '2,766~2,750', 'source': '한국자동차모빌리티산업협회(KAMA), 한국자동차연구원(KATECH)', 'year': '2026'}

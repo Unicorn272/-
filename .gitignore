@@ -1,7 +1,4 @@
 .env
-streamlit_app/db/
 __pycache__/
 *.pyc
-streamlit_app/*.txt
-streamlit_app/*.json
-streamlit_app/test_*.py
+~$*

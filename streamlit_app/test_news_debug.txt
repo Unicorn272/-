@@ -1,0 +1,30 @@
+--- block 0: ServerToolUseBlock ---
+ServerToolUseBlock(id='srvtoolu_01SF9NnoBE4W8spcZxvh5pni', caller=None, input={'query': 'MLCC 전기차 정책 동향 2026'}, name='web_search', type='server_tool_use')
+
+--- block 1: WebSearchToolResultBlock ---
+WebSearchToolResultBlock(caller=DirectCaller(type='direct'), content=[WebSearchResultBlock(encrypted_content='EqYPCioIEBgCIiRlZjI1ZjEyYi04MzgyLTQ5N2MtODQyZS02N2I1ZGFhZjQxMGMSDGpWudZFJVsdD1j82BoMsK/zzm6jmvTqykk1IjBTV7wuADFT3qUrbP33R2XuQLHRGCIxtPzPPu4/dmMA0FRwZSYa8zV5PLqST2dQyiMqqQ5mSbNI1Mfz5w5jlxHoYUAe7xPcOi7LLekl04aZc9zWjZwasnAywh6goxk/PFXna/V0ynFp1GMF3pxvYc0cYjgpFHjReSzlIPqWwYN9lCQwND6wfsw4zbAZszGBBTdknI8TQ8VVio2TE1aHzHc7FXT/hLvf3BNiZW49EUf1sfaYZ8I3+/fkLHX4vIA8HGh1caAehre0foLezwgNCNuPoXyxDk6+rr
+
+--- block 2: TextBlock ---
+TextBlock(citations=None, text='2026년 한국의 MLCC 및 전기차 정책 동향을 정리하면 다음과 같습니다.\n\n## MLCC와 전기차 시장 동향\n\n', type='text')
+
+--- block 3: TextBlock ---
+TextBlock(citations=[CitationsWebSearchResultLocation(cited_text='전장용 MLCC도 전기차 모델 증가에 따라 수요가 늘어나고 있다. ', encrypted_index='Eo8BCioIEBgCIiRlZjI1ZjEyYi04MzgyLTQ5N2MtODQyZS02N2I1ZGFhZjQxMGMSDEmUP8IoQAJoJxFdXhoM3uDok069hxzUUfuEIjBZc2v6KDBlyKvjEIba/ZTCKCsBASxiRbH22a1vf/BKVkgTmVY2itHUiGbhm6+woPcqE58jUlg/duHzY8HF3/B3l5yxvBgYBA==', title='"MLCC·FC-BGA 쌍두마차"…삼성전기, 하반기 기대감 키운다 < 기획 < 전자 < 산업 < 기사본문 - ER 이코노믹리뷰', type='web_search_result_location', url='https://www.econovill.com/news/articleView.html?idxno=
+
+--- block 4: TextBlock ---
+TextBlock(citations=None, text=' ', type='text')
+
+--- block 5: TextBlock ---
+TextBlock(citations=[CitationsWebSearchResultLocation(cited_text='삼성전기는 “AI 관련 응용처에서 MLCC 수요가 확대되면서 시장 내 수급 긴장도가 올라가고 있는 상황”이라며 “AI 빅테크 기업을 포함한 다양한 고객들과 장기 공급 계약 체결 협의를 진행 중이고 중장기 사업 확대 기반도 강화할 것”이라고 기대했다. ', encrypted_index='Eo8BCioIEBgCIiRlZjI1ZjEyYi04MzgyLTQ5N2MtODQyZS02N2I1ZGFhZjQxMGMSDIDx/VCIMGMamt57lxoMaLoTXIfayqG/3VEkIjBtGH6F1CZ0iGAJi+ud34yd9ReuMrVsKViUDM9jcUO0p3PdKWpnZl0eeSUvm/kro0wqE9bwxtESoo+/ViWTrsmts32aPAgYBA==', title='"MLCC·FC-BGA 쌍두마차"…삼성전기, 하반기 기대감 키운다 < 기획 < 전자 < 산업 < 기사본문 - ER 
+
+--- block 6: TextBlock ---
+TextBlock(citations=None, text='\n\n## 한국 전기차 보조금 정책 변화\n\n', type='text')
+
+--- block 7: TextBlock ---
+TextBlock(citations=[CitationsWebSearchResultLocation(cited_text='2026.04.06 (17:53:54) 7/1부로 한국의 전기차 보조금 정책이 바뀜 · 1. ', encrypted_index='Eo8BCioIEBgCIiRlZjI1ZjEyYi04MzgyLTQ5N2MtODQyZS02N2I1ZGFhZjQxMGMSDFoiCRXmLLBka7yjmhoM4kLeghIEf+4oqAS8IjAA6A7/NaYjlmo26v4QLIIEz+Q4jLToOi798MSBJsMJQ2TMnCpDdbSfUxjiSCX9proqE6ybhsVgkJQljR73dU85RjJ6UDAYBA==', title='71부로 바뀌는 전기차 보조금 정책', type='web_search_result_location', url='https://bbs.ruliweb.com/community/board/300143/read/74725260?best_tab=good&page=93&m=all&t
+
+--- block 8: TextBlock ---
+TextBlock(citations=None, text=' ', type='text')
+
+--- block 9: TextBlock ---
+TextBlock(citations=[CitationsWebSearchResultLocation(cited_text='보조금 지급 기준이 까다로워짐 · - 배터리 에너지 밀도가 높아야 보조금이 높아짐 · - PnC나 V2L과 같은 신기술이 들어가면 추가 혜택 · - 산업 기여 평가 항목 추가 · --> A/S 인프라나 안전 관리 등에서 국가가 정한 등급에 따라 보조금 차등 지급 · 사...', encrypted_index='Eo8BCioIEBgCIiRlZjI1ZjEyYi04MzgyLTQ5N2MtODQyZS02N2I1ZGFhZjQxMGMSDD7NuCKQY2H/q1hhDRoMf3+r4KdGnCEWk8qbIjD3f3W8CV1EvTqXwxJOdtpoAi2JcfVTDi3VGghCGFZVphefkyvEGkxHdTGmszWtL7MqE4fnJphmWl3Tsf51mtBay4mcVaAYBA==', title='71부로 바뀌는 전기차 보조금 정책', type='web_search_result_locat
+

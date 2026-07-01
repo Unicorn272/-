@@ -2,6 +2,7 @@ import json
 import os
 import re
 import time
+from datetime import date
 import requests
 import anthropic
 from dotenv import load_dotenv
@@ -127,11 +128,12 @@ JSON만 반환:
 
 def _ask_key_companies_with_purposes(industry: str) -> tuple[list[str], dict | None]:
     """ETF 없을 때 폴백: web_search로 관련주 검색 → 기업 목록 + 목적 프리셋 한 번에 생성."""
+    today = date.today().strftime("%Y년 %m월 %d일")
     resp = client.messages.create(
         model="claude-haiku-4-5-20251001",
         max_tokens=1024,
         tools=[{"type": "web_search_20250305", "name": "web_search", "max_uses": 3}],
-        messages=[{"role": "user", "content": f"""웹 검색으로 "{industry} 관련주", "{industry} 기업 종목"을 검색하세요.
+        messages=[{"role": "user", "content": f"""{today} 기준으로 웹 검색으로 "{industry} 관련주", "{industry} 기업 종목"을 검색하세요.
 검색 결과를 바탕으로 "{industry}" 산업의 한국 상장 기업 목록과 분석 목적별 추천 기업 세트를 만들어주세요.
 
 규칙:

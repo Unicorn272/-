@@ -1,0 +1,17 @@
+=== filings ===
+{'id': 5, 'corp_name': '신영증권', 'corp_code': '00136721', 'stock_code': '001720', 'report_type': 'securities', 'filed_at': 20260526, 'doc_url': 'https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260526000521', 'doc_size': 62160, 'created_at': '2026-05-26 09:45:04'}
+{'id': 6, 'corp_name': '한국캐피탈', 'corp_code': '00149594', 'stock_code': '023760', 'report_type': 'securities', 'filed_at': 20260526, 'doc_url': 'https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260526000464', 'doc_size': 2138813, 'created_at': '2026-05-26 09:45:07'}
+
+=== segments ===
+{'id': 9, 'filing_id': 6, 'application': '자동차, 산업기계, 의료기기, 통신기기', 'product': '리스금융(시설대여)', 'revenue_share': 8.2, 'industry_tags': ['여신금융', '물적금융', '시설대여'], 'parsed_at': '2026-05-26 09:45:13'}
+{'id': 10, 'filing_id': 6, 'application': '자동차, 내구재, 주택, 기계', 'product': '할부금융', 'revenue_share': 8.1, 'industry_tags': ['여신금융', '소비자금융', '할부'], 'parsed_at': '2026-05-26 09:45:13'}
+{'id': 11, 'filing_id': 6, 'application': '신기술, 벤처기업', 'product': '신기술사업금융', 'revenue_share': None, 'industry_tags': ['여신금융', '벤처투자', '지분참여'], 'parsed_at': '2026-05-26 09:45:13'}
+{'id': 12, 'filing_id': 6, 'application': '기업, 개인', 'product': '일반대출', 'revenue_share': 67.9, 'industry_tags': ['여신금융', '운전자금', '주택자금'], 'parsed_at': '2026-05-26 09:45:13'}
+{'id': 13, 'filing_id': 6, 'application': '기업', 'product': '팩토링', 'revenue_share': None, 'industry_tags': ['여신금융', '채권관리', '회수'], 'parsed_at': '2026-05-26 09:45:13'}
+{'id': 14, 'filing_id': 6, 'application': '기업', 'product': '지급보증', 'revenue_share': None, 'industry_tags': ['여신금융', '보증'], 'parsed_at': '2026-05-26 09:45:13'}
+
+=== companies ===
+{'corp_code': '00136721', 'corp_name': '신영증권', 'stock_code': '001720', 'induty_code': None, 'updated_at': '2026-05-26 09:45:04'}
+{'corp_code': '00149594', 'corp_name': '한국캐피탈', 'stock_code': '023760', 'induty_code': None, 'updated_at': '2026-05-26 09:45:07'}
+
+=== analysis_results ===
